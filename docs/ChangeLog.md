@@ -1,10 +1,11 @@
 # System Changelog
 
-## [1.1.0-module1b] - 2026-08-06
+## [1.2.0-module1c] - 2026-08-06
 ### Added
-- Complete Dependency Injection container (`ServiceContainer`), lifecycle bindings, child scoping, DFS circular dependency detector (`DependencyGraph`).
-- Plugin architecture framework (`PluginManager`) with error isolation and lifecycle hooks.
-- Provider registries (`AIProviderRegistry`, `SearchProviderRegistry`, `SpeechProviderRegistry`, `OCRProviderRegistry`, `StorageProviderRegistry`).
-- Custom errors (`ServiceNotFoundError`, `DuplicateServiceError`, `CircularDependencyError`, `InvalidPluginError`, `InvalidProviderError`).
-- Comprehensive unit test suites in `src/test/di.test.ts`, `src/test/plugin.test.ts`, `src/test/registry.test.ts` (16 passing tests).
-- Technical documentation in `docs/modules/di-container/`, `docs/modules/plugin-system/`, and `docs/modules/provider-registries/`.
+- Type-safe `EventBus` implementation with priority ordering (`CRITICAL`, `HIGH`, `NORMAL`, `LOW`), middleware pipeline, dead-letter queue, history buffer, and diagnostics.
+- `PriorityEventQueue` supporting delayed dispatch and backpressure callbacks.
+- `EventRegistry` mapping 17 system and video pipeline topics.
+- `ChromeMessagingBridge` abstracting Chrome runtime, tab, and port messaging.
+- Custom errors (`EventDispatchError`, `UnknownEventError`, `HandlerTimeoutError`, `MessageSerializationError`).
+- 10 new unit tests across `src/test/eventbus.test.ts`, `src/test/eventqueue.test.ts`, and `src/test/messaging.test.ts` (Total 26 passing tests).
+- Technical documentation in `docs/modules/event-bus/`.

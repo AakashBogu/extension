@@ -7,3 +7,7 @@
 ## Module 1B: Dependency Injection & Plugin Framework
 - **Date Completed**: 2026-08-06
 - **Deliverables**: `ServiceContainer` (Singleton/Scoped/Transient lifetimes), DFS `DependencyGraph` cycle detector, `PluginManager` with error sandboxing, and `ProviderRegistry` implementations for AI, Search, Speech, OCR, and Storage.
+
+## Module 1C: Event Bus & Messaging Infrastructure
+- **Date Completed**: 2026-08-06
+- **Deliverables**: `EventBus` implementation (Priority handlers, middleware pipeline, dead-letter queue, history buffer), `PriorityEventQueue` with backpressure management, `EventRegistry` for topic schemas, and `ChromeMessagingBridge` abstracting cross-context extension communication.

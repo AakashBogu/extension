@@ -1,4 +1,4 @@
 # Current Development Progress
 
-**Status**: Module 1B Completed.
-**Active Module**: Preparing for Module 1C (Event Bus & Pub/Sub Messaging Pipeline).
+**Status**: Module 1C Completed.
+**Active Module**: Preparing for Module 2 (Real-Time Audio Capture & VAD Engine).
