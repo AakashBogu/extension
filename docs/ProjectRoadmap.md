@@ -7,7 +7,8 @@
 - [x] **Module 1E: Configuration Platform & Environment Management** (ConfigurationManager, EnvironmentManager, FeatureFlagManager, PreferencesManager, SecretsManager)
 - [x] **Module 1F: Observability, Logging & Diagnostics Platform** (Logger, Providers, MetricsManager, PerformanceMonitor, Profiler, TraceManager, HealthMonitor, DiagnosticsManager, RuntimeInspector)
 - [x] **Module 2A: Browser Runtime & Context Manager** (BrowserRuntime, RuntimeManager, BrowserContext, TabManager, WindowManager, NavigationManager)
-- [ ] **Module 2B: Video Detector & Playback Inspector**
+- [x] **Module 2B: Video Discovery Engine** (VideoDiscoveryEngine, VideoRegistry, VideoLocator, VideoScanner, VideoObserver, VideoMetadataExtractor)
+- [ ] **Module 2C: Video Playback Inspector & Timeline Tracker**
 - [ ] **Module 3: Speech Transcription Pipeline**
 - [ ] **Module 4: Claim Detection Engine**
 - [ ] **Module 5: AI & Search Provider Abstraction Layer**

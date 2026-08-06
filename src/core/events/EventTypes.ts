@@ -1,5 +1,5 @@
 /**
- * Event Types & Topic Definitions (Module 2A Specification)
+ * Event Types & Topic Definitions (Module 2B Specification)
  */
 export type EventTopic =
   | 'audio.captured'
@@ -19,7 +19,6 @@ export type EventTopic =
   | 'system.config_changed'
   | 'system.error_occurred'
   | 'system.diagnostic'
-  // Module 2A Browser Runtime Topics
   | 'tab.created'
   | 'tab.updated'
   | 'tab.removed'
@@ -33,7 +32,14 @@ export type EventTopic =
   | 'page.visible'
   | 'page.hidden'
   | 'page.focused'
-  | 'page.blurred';
+  | 'page.blurred'
+  // Module 2B Video Discovery Topics
+  | 'video.discovered'
+  | 'video.registered'
+  | 'video.removed'
+  | 'video.registry_updated'
+  | 'video.scan_completed'
+  | 'video.metadata_updated';
 
 export type EventPriority = 'LOW' | 'NORMAL' | 'HIGH' | 'CRITICAL';
 
