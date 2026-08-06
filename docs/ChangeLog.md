@@ -1,13 +1,16 @@
 # System Changelog
 
-## [2.4.0-module2e] - 2026-08-06
+## [2.5.0-module2f] - 2026-08-06
 ### Added
-- `ActiveVideoManager` top-level active video selection manager.
-- `VideoScoringEngine` calculating weighted scores based on playing state, visibility %, size, fullscreen, PIP, unmuted state, focus, and user interaction.
-- `ActiveVideoSelector` selecting highest scoring video candidate and managing pinned video overrides.
-- `ViewportObserver` and `VisibilityTracker` tracking element visibility ratios using `IntersectionObserver`.
-- `FocusTracker` and `InteractionTracker`.
-- 6 new EventBus topics (`active_video.changed`, `active_video.selected`, `active_video.lost`, `video.score_updated`, `video.candidate_added`, `video.candidate_removed`).
-- Custom errors (`ActiveVideoError`, `VideoSelectionError`, `ScoringError`, `VisibilityTrackingError`).
-- 3 new unit test files across `src/test/videoscoring.test.ts`, `src/test/viewportobserver.test.ts`, and `src/test/activevideomanager.test.ts` (Total 69 passing tests across 32 test suites).
-- Technical documentation in `docs/modules/active-video-selection/`.
+- `BrowserIntegrationManager` top-level browser integration facade.
+- `BrowserPipeline` orchestrating end-to-end browser runtime and video discovery, lifecycle, playback, and selection pipeline.
+- `BrowserHealthMonitor` running diagnostic health checks over the full pipeline.
+- `BrowserCleanupManager` purging detached videos, unused observers, and orphaned snapshots.
+- `BrowserCompatibilityManager` checking browser feature support (ShadowDOM, IntersectionObserver, Offscreen, Chrome APIs).
+- `BrowserPerformanceManager` tracking discovery/selection latency and memory usage.
+- `BrowserValidationManager` enforcing pipeline invariants (active video uniqueness, registry consistency).
+- `DeveloperValidationHarness` providing site validation diagnostics (YouTube, Vimeo, Facebook, X, Generic).
+- 8 new EventBus topics (`browser_pipeline.ready`, `browser_pipeline.error`, `video_pipeline.ready`, `video_pipeline.error`, `health_check.completed`, `resource_cleanup.completed`, `compatibility_check.completed`, `performance_report.ready`).
+- Custom errors (`BrowserIntegrationError`, `PipelineValidationError`, `CompatibilityError`, `CleanupError`, `HealthCheckError`).
+- 4 new integration test files across `src/test/browserpipeline.test.ts`, `src/test/browserhealth.test.ts`, `src/test/browsercleanup.test.ts`, and `src/test/browserintegration.test.ts` (Total 73 passing tests across 36 test suites).
+- Technical documentation in `docs/modules/browser-integration/`.

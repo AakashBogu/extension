@@ -1,5 +1,5 @@
 /**
- * Event Types & Topic Definitions (Module 2E Specification)
+ * Event Types & Topic Definitions (Module 2F Specification)
  */
 export type EventTopic =
   | 'audio.captured'
@@ -62,13 +62,21 @@ export type EventTopic =
   | 'playback.ended'
   | 'playback.fullscreen_changed'
   | 'playback.pip_changed'
-  // Module 2E Active Video Selection Topics
   | 'active_video.changed'
   | 'active_video.selected'
   | 'active_video.lost'
   | 'video.score_updated'
   | 'video.candidate_added'
-  | 'video.candidate_removed';
+  | 'video.candidate_removed'
+  // Module 2F Pipeline & Integration Topics
+  | 'browser_pipeline.ready'
+  | 'browser_pipeline.error'
+  | 'video_pipeline.ready'
+  | 'video_pipeline.error'
+  | 'health_check.completed'
+  | 'resource_cleanup.completed'
+  | 'compatibility_check.completed'
+  | 'performance_report.ready';
 
 export type EventPriority = 'LOW' | 'NORMAL' | 'HIGH' | 'CRITICAL';
 

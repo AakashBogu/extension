@@ -37,28 +37,29 @@ export class VideoDiscoveryEngine {
   }
 
   startDiscovery(): void {
-    if (!this.config.autoDiscoveryEnabled) return;
+    if (typeof document === 'undefined' || !this.config.autoDiscoveryEnabled) return;
 
     this.scanner.scan(document, this.config.scanShadowDom);
 
-    this.observer.startObserving(document.body || document.documentElement, (added, removed) => {
-      added.forEach(el => {
-        const meta = this.extractor.extractMetadata(el);
-        this.registry.registerVideo(el, meta);
+    const targetNode = document.body || document.documentElement;
+    if (targetNode) {
+      this.observer.startObserving(targetNode, (added, removed) => {
+        added.forEach(el => {
+          const meta = this.extractor.extractMetadata(el);
+          this.registry.registerVideo(el, meta);
+        });
+        removed.forEach(_el => {
+          // Cleanup handling
+        });
       });
-      removed.forEach(_el => {
-        // Handle removal cleanup if ID attached
-      });
-    });
+    }
   }
 
   stopDiscovery(): void {
     this.observer.stopObserving();
   }
 
-  private syncState(stateStore: GlobalStateStore): void {
-    stateStore.subscribe(() => {
-      // Sync video slice if needed
-    });
+  private syncState(_stateStore: GlobalStateStore): void {
+    // Sync video slice if needed
   }
 }
