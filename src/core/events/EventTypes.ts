@@ -1,5 +1,5 @@
 /**
- * Event Types & Topic Definitions (Module 2D Specification)
+ * Event Types & Topic Definitions (Module 2E Specification)
  */
 export type EventTopic =
   | 'audio.captured'
@@ -49,7 +49,6 @@ export type EventTopic =
   | 'video.ended'
   | 'video.destroyed'
   | 'video.error'
-  // Module 2D Playback Tracking Topics
   | 'playback.started'
   | 'playback.updated'
   | 'playback.paused'
@@ -62,7 +61,14 @@ export type EventTopic =
   | 'playback.resumed'
   | 'playback.ended'
   | 'playback.fullscreen_changed'
-  | 'playback.pip_changed';
+  | 'playback.pip_changed'
+  // Module 2E Active Video Selection Topics
+  | 'active_video.changed'
+  | 'active_video.selected'
+  | 'active_video.lost'
+  | 'video.score_updated'
+  | 'video.candidate_added'
+  | 'video.candidate_removed';
 
 export type EventPriority = 'LOW' | 'NORMAL' | 'HIGH' | 'CRITICAL';
 

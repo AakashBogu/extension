@@ -10,7 +10,8 @@
 - [x] **Module 2B: Video Discovery Engine** (VideoDiscoveryEngine, VideoRegistry, VideoLocator, VideoScanner, VideoObserver, VideoMetadataExtractor)
 - [x] **Module 2C: Video Lifecycle Manager** (VideoLifecycleManager, VideoLifecycleRegistry, VideoLifecycleObserver, VideoStateMachine, VideoStateResolver)
 - [x] **Module 2D: Playback Tracking Engine** (PlaybackTrackingEngine, PlaybackTracker, PlaybackRegistry, PlaybackSnapshotManager, PlaybackMetricsCollector, PlaybackStateResolver)
-- [ ] **Module 2E: Real-Time Tab Audio Capturer & Offscreen Audio Processor**
+- [x] **Module 2E: Active Video Selection Engine** (ActiveVideoManager, ActiveVideoSelector, VideoScoringEngine, VisibilityTracker, ViewportObserver, FocusTracker, InteractionTracker)
+- [ ] **Module 2F: Real-Time Tab Audio Capturer & Offscreen Audio Processor**
 - [ ] **Module 3: Speech Transcription Pipeline**
 - [ ] **Module 4: Claim Detection Engine**
 - [ ] **Module 5: AI & Search Provider Abstraction Layer**

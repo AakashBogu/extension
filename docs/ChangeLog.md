@@ -1,14 +1,13 @@
 # System Changelog
 
-## [2.3.0-module2d] - 2026-08-06
+## [2.4.0-module2e] - 2026-08-06
 ### Added
-- `PlaybackTrackingEngine` top-level playback telemetry tracking engine.
-- `PlaybackTracker` capturing 16 DOM playback events (`timeupdate`, `ratechange`, `volumechange`, `durationchange`, `progress`, `seeking`, `seeked`, `waiting`, `playing`, `pause`, `ended`, `stalled`, `resize`, `enterpictureinpicture`, `leavepictureinpicture`, `fullscreenchange`).
-- `PlaybackSnapshotManager` computing time deltas, progress percentages, session duration, and snapshot ring history.
-- `PlaybackMetricsCollector` aggregating watch time, pause count, seek count, buffer count, fullscreen time, and PIP time.
-- `PlaybackStateResolver` extracting current `PlaybackState` from HTMLVideoElement properties.
-- `PlaybackRegistry` managing playback session records.
-- 13 new EventBus topics (`playback.started`, `playback.updated`, `playback.paused`, `playback.seek_started`, `playback.seek_completed`, `playback.rate_changed`, `playback.volume_changed`, `playback.progress`, `playback.buffering`, `playback.resumed`, `playback.ended`, `playback.fullscreen_changed`, `playback.pip_changed`).
-- Custom errors (`PlaybackTrackingError`, `PlaybackSnapshotError`, `PlaybackMetricsError`).
-- 3 new unit test files across `src/test/playbacktracker.test.ts`, `src/test/playbacksnapshot.test.ts`, and `src/test/playbackmetrics.test.ts` (Total 65 passing tests across 29 test suites).
-- Technical documentation in `docs/modules/playback-tracking/`.
+- `ActiveVideoManager` top-level active video selection manager.
+- `VideoScoringEngine` calculating weighted scores based on playing state, visibility %, size, fullscreen, PIP, unmuted state, focus, and user interaction.
+- `ActiveVideoSelector` selecting highest scoring video candidate and managing pinned video overrides.
+- `ViewportObserver` and `VisibilityTracker` tracking element visibility ratios using `IntersectionObserver`.
+- `FocusTracker` and `InteractionTracker`.
+- 6 new EventBus topics (`active_video.changed`, `active_video.selected`, `active_video.lost`, `video.score_updated`, `video.candidate_added`, `video.candidate_removed`).
+- Custom errors (`ActiveVideoError`, `VideoSelectionError`, `ScoringError`, `VisibilityTrackingError`).
+- 3 new unit test files across `src/test/videoscoring.test.ts`, `src/test/viewportobserver.test.ts`, and `src/test/activevideomanager.test.ts` (Total 69 passing tests across 32 test suites).
+- Technical documentation in `docs/modules/active-video-selection/`.
