@@ -1,2 +1,0 @@
-import"./modulepreload-polyfill-B5Qt9EMX.js";import{j as e,c as s,R as o}from"./index-B8ZV2tqh.js";const r=()=>e.jsxs("div",{className:"p-4 font-mono text-xs text-slate-300",children:[e.jsx("h2",{className:"text-sm font-bold text-slate-100",children:"FactCheck Developer Debug Panel"}),e.jsx("p",{className:"mt-2 text-slate-400",children:"Ready for event bus telemetry streaming."})]}),t=document.getElementById("root");t&&s.createRoot(t).render(e.jsx(o.StrictMode,{children:e.jsx(r,{})}));
-//# sourceMappingURL=devtools-DEQDpVjA.js.map

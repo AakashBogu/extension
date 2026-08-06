@@ -1,5 +1,5 @@
 /**
- * Event Types & Topic Definitions (Module 2B Specification)
+ * Event Types & Topic Definitions (Module 2C Specification)
  */
 export type EventTopic =
   | 'audio.captured'
@@ -33,13 +33,23 @@ export type EventTopic =
   | 'page.hidden'
   | 'page.focused'
   | 'page.blurred'
-  // Module 2B Video Discovery Topics
   | 'video.discovered'
   | 'video.registered'
   | 'video.removed'
   | 'video.registry_updated'
   | 'video.scan_completed'
-  | 'video.metadata_updated';
+  | 'video.metadata_updated'
+  // Module 2C Video Lifecycle Topics
+  | 'video.state_changed'
+  | 'video.ready'
+  | 'video.playing'
+  | 'video.paused'
+  | 'video.buffering'
+  | 'video.waiting'
+  | 'video.stalled'
+  | 'video.ended'
+  | 'video.destroyed'
+  | 'video.error';
 
 export type EventPriority = 'LOW' | 'NORMAL' | 'HIGH' | 'CRITICAL';
 
