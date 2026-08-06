@@ -11,3 +11,7 @@
 ## Module 1C: Event Bus & Messaging Infrastructure
 - **Date Completed**: 2026-08-06
 - **Deliverables**: `EventBus` implementation (Priority handlers, middleware pipeline, dead-letter queue, history buffer), `PriorityEventQueue` with backpressure management, `EventRegistry` for topic schemas, and `ChromeMessagingBridge` abstracting cross-context extension communication.
+
+## Module 1D: Application Kernel & State Management
+- **Date Completed**: 2026-08-06
+- **Deliverables**: `ApplicationKernel` bootstrapper and orchestrator, `ApplicationContext` unified container, `GlobalStateStore` with selector memoization, `StateSnapshotManager`, `StateRegistry`, `StatePersistenceManager`, `StateSyncManager`, and complete DI/EventBus integration.
