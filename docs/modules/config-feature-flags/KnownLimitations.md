@@ -1,25 +1,3 @@
-# Configuration & Feature Flags - KnownLimitations
+# Configuration & Feature Flags Platform - Known Limitations
 
-## Overview
-This document specifies the technical details for the **KnownLimitations** of the **Configuration & Feature Flags**.
-
-### Module Summary
-- **Module Name**: `Configuration & Feature Flags`
-- **ID**: `config-feature-flags`
-- **Document**: `KnownLimitations.md`
-
-### Core Specifications
-- **Design Pattern**: Clean Architecture, SOLID, Interface-driven.
-- **Dependencies**: Injected via Service Container.
-- **Observability**: Metrics & structured logs emitted to central telemetry.
-
-```typescript
-// Public Contract Example for Configuration & Feature Flags
-export interface IConfigFeatureFlags {
-  initialize(): Promise<void>;
-  dispose(): Promise<void>;
-}
-```
-
----
-*Generated as part of the Video Fact-Checking Chrome Extension Architecture Documentation.*
+- Enterprise Remote Configuration and Server-driven Feature Flag Evaluation will be integrated in future enterprise releases.

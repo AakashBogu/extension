@@ -1,25 +1,15 @@
-# Configuration & Feature Flags - PublicAPI
-
-## Overview
-This document specifies the technical details for the **PublicAPI** of the **Configuration & Feature Flags**.
-
-### Module Summary
-- **Module Name**: `Configuration & Feature Flags`
-- **ID**: `config-feature-flags`
-- **Document**: `PublicAPI.md`
-
-### Core Specifications
-- **Design Pattern**: Clean Architecture, SOLID, Interface-driven.
-- **Dependencies**: Injected via Service Container.
-- **Observability**: Metrics & structured logs emitted to central telemetry.
+# Configuration & Feature Flags Platform - Public API Specifications
 
 ```typescript
-// Public Contract Example for Configuration & Feature Flags
-export interface IConfigFeatureFlags {
-  initialize(): Promise<void>;
-  dispose(): Promise<void>;
+export class ConfigurationManager implements IConfigLoader {
+  loadConfig(): Promise<AppConfig>;
+  updateConfig(partial: Partial<ExtendedAppConfig>): Promise<void>;
+  createSnapshot(): ConfigSnapshot;
+  rollback(): void;
+}
+export class FeatureFlagManager {
+  registerFlag(flag: FeatureFlag): void;
+  isEnabled(flagId: string, currentEnv?: EnvironmentType): boolean;
+  setOverride(flagId: string, enabled: boolean): void;
 }
 ```
-
----
-*Generated as part of the Video Fact-Checking Chrome Extension Architecture Documentation.*

@@ -1,25 +1,10 @@
-# Configuration & Feature Flags - SequenceDiagram
+# Configuration & Feature Flags Platform - Sequence Diagram
 
-## Overview
-This document specifies the technical details for the **SequenceDiagram** of the **Configuration & Feature Flags**.
-
-### Module Summary
-- **Module Name**: `Configuration & Feature Flags`
-- **ID**: `config-feature-flags`
-- **Document**: `SequenceDiagram.md`
-
-### Core Specifications
-- **Design Pattern**: Clean Architecture, SOLID, Interface-driven.
-- **Dependencies**: Injected via Service Container.
-- **Observability**: Metrics & structured logs emitted to central telemetry.
-
-```typescript
-// Public Contract Example for Configuration & Feature Flags
-export interface IConfigFeatureFlags {
-  initialize(): Promise<void>;
-  dispose(): Promise<void>;
-}
+```mermaid
+sequenceDiagram
+  Client->>ConfigurationManager: updateConfig({ logLevel: "debug" })
+  ConfigurationManager->>ConfigurationValidator: validate(nextConfig)
+  ConfigurationManager->>ConfigurationManager: createSnapshot()
+  ConfigurationManager->>EventBus: publish("system.config_changed")
+  ConfigurationManager->>StateManager: update GlobalState
 ```
-
----
-*Generated as part of the Video Fact-Checking Chrome Extension Architecture Documentation.*

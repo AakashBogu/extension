@@ -1,25 +1,3 @@
-# Configuration & Feature Flags - DataFlow
+# Configuration & Feature Flags Platform - Data Flow & Lifecycle
 
-## Overview
-This document specifies the technical details for the **DataFlow** of the **Configuration & Feature Flags**.
-
-### Module Summary
-- **Module Name**: `Configuration & Feature Flags`
-- **ID**: `config-feature-flags`
-- **Document**: `DataFlow.md`
-
-### Core Specifications
-- **Design Pattern**: Clean Architecture, SOLID, Interface-driven.
-- **Dependencies**: Injected via Service Container.
-- **Observability**: Metrics & structured logs emitted to central telemetry.
-
-```typescript
-// Public Contract Example for Configuration & Feature Flags
-export interface IConfigFeatureFlags {
-  initialize(): Promise<void>;
-  dispose(): Promise<void>;
-}
-```
-
----
-*Generated as part of the Video Fact-Checking Chrome Extension Architecture Documentation.*
+1. Load from provider -> 2. Validate schema -> 3. Update internal state -> 4. Publish system.config_changed -> 5. Sync with GlobalStateStore.
