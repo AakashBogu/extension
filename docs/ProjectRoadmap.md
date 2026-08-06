@@ -6,7 +6,8 @@
 - [x] **Module 1D: Application Kernel & State Management** (ApplicationKernel, ApplicationContext, GlobalStateStore, Snapshots, Persistence, Registries)
 - [x] **Module 1E: Configuration Platform & Environment Management** (ConfigurationManager, EnvironmentManager, FeatureFlagManager, PreferencesManager, SecretsManager)
 - [x] **Module 1F: Observability, Logging & Diagnostics Platform** (Logger, Providers, MetricsManager, PerformanceMonitor, Profiler, TraceManager, HealthMonitor, DiagnosticsManager, RuntimeInspector)
-- [ ] **Module 2: Real-Time Audio Capture & VAD Engine**
+- [x] **Module 2A: Browser Runtime & Context Manager** (BrowserRuntime, RuntimeManager, BrowserContext, TabManager, WindowManager, NavigationManager)
+- [ ] **Module 2B: Video Detector & Playback Inspector**
 - [ ] **Module 3: Speech Transcription Pipeline**
 - [ ] **Module 4: Claim Detection Engine**
 - [ ] **Module 5: AI & Search Provider Abstraction Layer**

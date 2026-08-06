@@ -1,5 +1,5 @@
 /**
- * Event Types & Topic Definitions (Module 1C Specification)
+ * Event Types & Topic Definitions (Module 2A Specification)
  */
 export type EventTopic =
   | 'audio.captured'
@@ -18,7 +18,22 @@ export type EventTopic =
   | 'system.service_registered'
   | 'system.config_changed'
   | 'system.error_occurred'
-  | 'system.diagnostic';
+  | 'system.diagnostic'
+  // Module 2A Browser Runtime Topics
+  | 'tab.created'
+  | 'tab.updated'
+  | 'tab.removed'
+  | 'tab.activated'
+  | 'window.created'
+  | 'window.removed'
+  | 'window.focused'
+  | 'navigation.started'
+  | 'navigation.completed'
+  | 'url.changed'
+  | 'page.visible'
+  | 'page.hidden'
+  | 'page.focused'
+  | 'page.blurred';
 
 export type EventPriority = 'LOW' | 'NORMAL' | 'HIGH' | 'CRITICAL';
 

@@ -1,16 +1,13 @@
 # System Changelog
 
-## [1.5.0-module1f] - 2026-08-06
+## [2.0.0-module2a] - 2026-08-06
 ### Added
-- Structured JSON `Logger` implementing `ILogger` supporting log levels (`trace`, `debug`, `info`, `warn`, `error`, `fatal`).
-- Log providers: `MemoryLogProvider` (ring-buffer) and `ConsoleLogProvider`.
-- `MetricsManager` supporting counters, gauges, histograms, and timers.
-- `PerformanceMonitor` operation timers, moving averages, and min/max duration metrics.
-- `Profiler` scoped execution profiling.
-- `TraceManager` with parent-child span IDs and trace lifecycle tracking.
-- `HealthMonitor` aggregated component health checks.
-- `DiagnosticsManager` diagnostic report generator.
-- `DebugManager` and `RuntimeInspector`.
-- Custom errors (`LoggingError`, `MetricsError`, `TracingError`, `ProfilingError`, `DiagnosticsError`, `HealthCheckError`).
-- 8 new unit tests across `src/test/logger.test.ts`, `src/test/metrics.test.ts`, `src/test/tracing.test.ts`, and `src/test/diagnostics.test.ts` (Total 47 passing tests).
-- Technical documentation in `docs/modules/observability/`.
+- BrowserRuntime and RuntimeManager top-level browser runtime engine.
+- TabManager for tab creation, activation, removal, and listing.
+- WindowManager for window creation, focus, and state management.
+- NavigationManager for normal & SPA navigation (pushState, replaceState, popstate), URL changes, and DOM page lifecycle events (DOMContentLoaded, visibilitychange, focus, blur).
+- BrowserContext exposing current tab, window, origin, domain, permissions status, and page lifecycle state.
+- 13 new EventBus topics (tab.*, window.*, navigation.*, url.changed, page.*).
+- Custom errors (BrowserRuntimeError, NavigationError, ContextError, TabError, WindowError).
+- 5 new unit test files (Total 52 passing tests across 20 test suites).
+- Technical documentation in docs/modules/browser-runtime/.
