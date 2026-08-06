@@ -1,25 +1,9 @@
-# Dependency Injection Container - README
+# Dependency Injection Container - Technical Overview
 
-## Overview
-This document specifies the technical details for the **README** of the **Dependency Injection Container**.
+## Summary
+Production-grade DI container supporting Singleton, Scoped, and Transient lifetimes, constructor/factory/value bindings, lazy resolution, and DFS circular dependency detection.
 
-### Module Summary
-- **Module Name**: `Dependency Injection Container`
-- **ID**: `di-container`
-- **Document**: `README.md`
-
-### Core Specifications
-- **Design Pattern**: Clean Architecture, SOLID, Interface-driven.
-- **Dependencies**: Injected via Service Container.
-- **Observability**: Metrics & structured logs emitted to central telemetry.
-
-```typescript
-// Public Contract Example for Dependency Injection Container
-export interface IDiContainer {
-  initialize(): Promise<void>;
-  dispose(): Promise<void>;
-}
-```
-
----
-*Generated as part of the Video Fact-Checking Chrome Extension Architecture Documentation.*
+## Components Implemented
+- `ServiceContainer`: Main implementation of `IServiceContainer`.
+- `DependencyGraph`: Graph node/edge inspector with cycle detection.
+- `ServiceRegistry`: Centralized module registration coordinator.

@@ -1,25 +1,10 @@
-# Plugin Architecture Framework - Architecture
+# Plugin Architecture Framework - Architecture Blueprint
 
-## Overview
-This document specifies the technical details for the **Architecture** of the **Plugin Architecture Framework**.
-
-### Module Summary
-- **Module Name**: `Plugin Architecture Framework`
-- **ID**: `plugin-system`
-- **Document**: `Architecture.md`
-
-### Core Specifications
-- **Design Pattern**: Clean Architecture, SOLID, Interface-driven.
-- **Dependencies**: Injected via Service Container.
-- **Observability**: Metrics & structured logs emitted to central telemetry.
-
-```typescript
-// Public Contract Example for Plugin Architecture Framework
-export interface IPluginSystem {
-  initialize(): Promise<void>;
-  dispose(): Promise<void>;
-}
+```mermaid
+stateDiagram-v2
+  [*] --> Uninitialized
+  Uninitialized --> Initialized: initialize()
+  Initialized --> Started: start()
+  Started --> Stopped: stop()
+  Initialized --> Error: Error thrown
 ```
-
----
-*Generated as part of the Video Fact-Checking Chrome Extension Architecture Documentation.*

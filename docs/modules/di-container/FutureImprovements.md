@@ -1,25 +1,3 @@
-# Dependency Injection Container - FutureImprovements
+# Dependency Injection Container - Future Improvements
 
-## Overview
-This document specifies the technical details for the **FutureImprovements** of the **Dependency Injection Container**.
-
-### Module Summary
-- **Module Name**: `Dependency Injection Container`
-- **ID**: `di-container`
-- **Document**: `FutureImprovements.md`
-
-### Core Specifications
-- **Design Pattern**: Clean Architecture, SOLID, Interface-driven.
-- **Dependencies**: Injected via Service Container.
-- **Observability**: Metrics & structured logs emitted to central telemetry.
-
-```typescript
-// Public Contract Example for Dependency Injection Container
-export interface IDiContainer {
-  initialize(): Promise<void>;
-  dispose(): Promise<void>;
-}
-```
-
----
-*Generated as part of the Video Fact-Checking Chrome Extension Architecture Documentation.*
+- Add remote plugin downloading and verification sandbox via Web Workers if authorized by user options.

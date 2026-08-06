@@ -1,7 +1,7 @@
 # Extension Development Roadmap
 
 - [x] **Module 1A: Project Foundation** (MV3 Manifest, Vite, React, Tailwind, Shells, Contracts)
-- [ ] **Module 1B: Dependency Injection & Plugin Architecture**
+- [x] **Module 1B: Dependency Injection & Plugin Architecture** (ServiceContainer, Lifetimes, PluginManager, ProviderRegistries)
 - [ ] **Module 1C: Event Bus & Messaging Pipeline**
 - [ ] **Module 2: Real-Time Audio Capture & VAD Engine**
 - [ ] **Module 3: Speech Transcription Pipeline**

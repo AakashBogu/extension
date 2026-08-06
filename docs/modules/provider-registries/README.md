@@ -1,25 +1,12 @@
-# Provider Registries Module - README
+# Provider Registries Module - Technical Overview
 
-## Overview
-This document specifies the technical details for the **README** of the **Provider Registries Module**.
+## Summary
+Decoupled registries for AI, Search, Speech, OCR, and Storage providers with priority ordering and default provider selection.
 
-### Module Summary
-- **Module Name**: `Provider Registries Module`
-- **ID**: `provider-registries`
-- **Document**: `README.md`
-
-### Core Specifications
-- **Design Pattern**: Clean Architecture, SOLID, Interface-driven.
-- **Dependencies**: Injected via Service Container.
-- **Observability**: Metrics & structured logs emitted to central telemetry.
-
-```typescript
-// Public Contract Example for Provider Registries Module
-export interface IProviderRegistries {
-  initialize(): Promise<void>;
-  dispose(): Promise<void>;
-}
-```
-
----
-*Generated as part of the Video Fact-Checking Chrome Extension Architecture Documentation.*
+## Components Implemented
+- `ProviderRegistry<T>`: Base generic registry.
+- `AIProviderRegistry`: AI models (Gemini, OpenAI, Claude, Local).
+- `SearchProviderRegistry`: Search engines (Tavily, Google, Exa).
+- `SpeechProviderRegistry`: STT engines (WebSpeech, Whisper WASM).
+- `OCRProviderRegistry`: Video frame OCR engines (Tesseract).
+- `StorageProviderRegistry`: Persistence backends (IndexedDB, Chrome Storage).

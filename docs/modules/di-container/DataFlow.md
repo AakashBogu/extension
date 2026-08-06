@@ -1,25 +1,3 @@
-# Dependency Injection Container - DataFlow
+# Dependency Injection Container - Data Flow & Lifecycle
 
-## Overview
-This document specifies the technical details for the **DataFlow** of the **Dependency Injection Container**.
-
-### Module Summary
-- **Module Name**: `Dependency Injection Container`
-- **ID**: `di-container`
-- **Document**: `DataFlow.md`
-
-### Core Specifications
-- **Design Pattern**: Clean Architecture, SOLID, Interface-driven.
-- **Dependencies**: Injected via Service Container.
-- **Observability**: Metrics & structured logs emitted to central telemetry.
-
-```typescript
-// Public Contract Example for Dependency Injection Container
-export interface IDiContainer {
-  initialize(): Promise<void>;
-  dispose(): Promise<void>;
-}
-```
-
----
-*Generated as part of the Video Fact-Checking Chrome Extension Architecture Documentation.*
+1. Register binding -> 2. Inspect dependency graph -> 3. Resolve requested identifier -> 4. Cache instance if Singleton/Scoped.

@@ -1,25 +1,3 @@
-# Provider Registries Module - KnownLimitations
+# Provider Registries Module - Known Limitations
 
-## Overview
-This document specifies the technical details for the **KnownLimitations** of the **Provider Registries Module**.
-
-### Module Summary
-- **Module Name**: `Provider Registries Module`
-- **ID**: `provider-registries`
-- **Document**: `KnownLimitations.md`
-
-### Core Specifications
-- **Design Pattern**: Clean Architecture, SOLID, Interface-driven.
-- **Dependencies**: Injected via Service Container.
-- **Observability**: Metrics & structured logs emitted to central telemetry.
-
-```typescript
-// Public Contract Example for Provider Registries Module
-export interface IProviderRegistries {
-  initialize(): Promise<void>;
-  dispose(): Promise<void>;
-}
-```
-
----
-*Generated as part of the Video Fact-Checking Chrome Extension Architecture Documentation.*
+- Reflection-based auto-wire decorator injection is intentionally omitted in favor of explicit factory/constructor bindings to keep the MV3 runtime lightweight.

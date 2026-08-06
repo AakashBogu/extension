@@ -1,25 +1,8 @@
-# Plugin Architecture Framework - SequenceDiagram
+# Plugin Architecture Framework - Sequence Diagram
 
-## Overview
-This document specifies the technical details for the **SequenceDiagram** of the **Plugin Architecture Framework**.
-
-### Module Summary
-- **Module Name**: `Plugin Architecture Framework`
-- **ID**: `plugin-system`
-- **Document**: `SequenceDiagram.md`
-
-### Core Specifications
-- **Design Pattern**: Clean Architecture, SOLID, Interface-driven.
-- **Dependencies**: Injected via Service Container.
-- **Observability**: Metrics & structured logs emitted to central telemetry.
-
-```typescript
-// Public Contract Example for Plugin Architecture Framework
-export interface IPluginSystem {
-  initialize(): Promise<void>;
-  dispose(): Promise<void>;
-}
+```mermaid
+sequenceDiagram
+  App->>PluginManager: registerPlugin(plugin)
+  PluginManager->>Plugin: initialize(container)
+  PluginManager->>PluginManager: Set status to "initialized"
 ```
-
----
-*Generated as part of the Video Fact-Checking Chrome Extension Architecture Documentation.*

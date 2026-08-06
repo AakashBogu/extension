@@ -1,25 +1,11 @@
-# Plugin Architecture Framework - PublicAPI
-
-## Overview
-This document specifies the technical details for the **PublicAPI** of the **Plugin Architecture Framework**.
-
-### Module Summary
-- **Module Name**: `Plugin Architecture Framework`
-- **ID**: `plugin-system`
-- **Document**: `PublicAPI.md`
-
-### Core Specifications
-- **Design Pattern**: Clean Architecture, SOLID, Interface-driven.
-- **Dependencies**: Injected via Service Container.
-- **Observability**: Metrics & structured logs emitted to central telemetry.
+# Plugin Architecture Framework - Public API Specifications
 
 ```typescript
-// Public Contract Example for Plugin Architecture Framework
-export interface IPluginSystem {
-  initialize(): Promise<void>;
-  dispose(): Promise<void>;
+export class PluginManager {
+  registerPlugin(plugin: IExtendedPlugin): Promise<void>;
+  startPlugin(pluginId: string): Promise<void>;
+  stopPlugin(pluginId: string): Promise<void>;
+  unregisterPlugin(pluginId: string): Promise<void>;
+  listPlugins(): PluginMetadata[];
 }
 ```
-
----
-*Generated as part of the Video Fact-Checking Chrome Extension Architecture Documentation.*

@@ -1,25 +1,9 @@
-# Provider Registries Module - Interfaces
-
-## Overview
-This document specifies the technical details for the **Interfaces** of the **Provider Registries Module**.
-
-### Module Summary
-- **Module Name**: `Provider Registries Module`
-- **ID**: `provider-registries`
-- **Document**: `Interfaces.md`
-
-### Core Specifications
-- **Design Pattern**: Clean Architecture, SOLID, Interface-driven.
-- **Dependencies**: Injected via Service Container.
-- **Observability**: Metrics & structured logs emitted to central telemetry.
+# Provider Registries Module - Interfaces & Type Contracts
 
 ```typescript
-// Public Contract Example for Provider Registries Module
-export interface IProviderRegistries {
-  initialize(): Promise<void>;
-  dispose(): Promise<void>;
+export interface ProviderEntry<T> {
+  id: string;
+  provider: T;
+  priority: number;
 }
 ```
-
----
-*Generated as part of the Video Fact-Checking Chrome Extension Architecture Documentation.*

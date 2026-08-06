@@ -1,25 +1,15 @@
-# Provider Registries Module - Architecture
+# Provider Registries Module - Architecture Blueprint
 
-## Overview
-This document specifies the technical details for the **Architecture** of the **Provider Registries Module**.
-
-### Module Summary
-- **Module Name**: `Provider Registries Module`
-- **ID**: `provider-registries`
-- **Document**: `Architecture.md`
-
-### Core Specifications
-- **Design Pattern**: Clean Architecture, SOLID, Interface-driven.
-- **Dependencies**: Injected via Service Container.
-- **Observability**: Metrics & structured logs emitted to central telemetry.
-
-```typescript
-// Public Contract Example for Provider Registries Module
-export interface IProviderRegistries {
-  initialize(): Promise<void>;
-  dispose(): Promise<void>;
-}
+```mermaid
+classDiagram
+  class ProviderRegistry~T~ {
+    +register(id, provider, priority)
+    +unregister(id)
+    +resolve(id): T
+    +setDefault(id)
+    +getDefault(): T
+    +listProviders()
+  }
+  ProviderRegistry <|-- AIProviderRegistry
+  ProviderRegistry <|-- SearchProviderRegistry
 ```
-
----
-*Generated as part of the Video Fact-Checking Chrome Extension Architecture Documentation.*

@@ -1,25 +1,10 @@
-# Plugin Architecture Framework - Interfaces
-
-## Overview
-This document specifies the technical details for the **Interfaces** of the **Plugin Architecture Framework**.
-
-### Module Summary
-- **Module Name**: `Plugin Architecture Framework`
-- **ID**: `plugin-system`
-- **Document**: `Interfaces.md`
-
-### Core Specifications
-- **Design Pattern**: Clean Architecture, SOLID, Interface-driven.
-- **Dependencies**: Injected via Service Container.
-- **Observability**: Metrics & structured logs emitted to central telemetry.
+# Plugin Architecture Framework - Interfaces & Type Contracts
 
 ```typescript
-// Public Contract Example for Plugin Architecture Framework
-export interface IPluginSystem {
-  initialize(): Promise<void>;
-  dispose(): Promise<void>;
+export interface IExtendedPlugin extends IPlugin {
+  start?(): Promise<void>;
+  stop?(): Promise<void>;
+  capabilities?: string[];
+  dependencies?: string[];
 }
 ```
-
----
-*Generated as part of the Video Fact-Checking Chrome Extension Architecture Documentation.*
