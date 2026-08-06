@@ -1,13 +1,14 @@
 # System Changelog
 
-## [2.2.0-module2c] - 2026-08-06
+## [2.3.0-module2d] - 2026-08-06
 ### Added
-- `VideoLifecycleManager` top-level video lifecycle manager.
-- `VideoStateMachine` validating 14 lifecycle states (`UNKNOWN`, `DISCOVERED`, `METADATA_LOADING`, `METADATA_READY`, `READY`, `CAN_PLAY`, `PLAYING`, `PAUSED`, `BUFFERING`, `SEEKING`, `WAITING`, `STALLED`, `ENDED`, `DESTROYED`).
-- `VideoStateResolver` resolving 20 HTML5 video media events into lifecycle states.
-- `VideoLifecycleRegistry` managing transition history and timestamps per video.
-- `VideoLifecycleObserver` for auto-attachment and detachment of HTML5 media event listeners.
-- 10 new EventBus topics (`video.state_changed`, `video.ready`, `video.playing`, `video.paused`, `video.buffering`, `video.waiting`, `video.stalled`, `video.ended`, `video.destroyed`, `video.error`).
-- Custom errors (`VideoLifecycleError`, `LifecycleTransitionError`, `ListenerError`).
-- 5 new unit test cases across `src/test/videostatemachine.test.ts`, `src/test/videostateresolver.test.ts`, and `src/test/videolifecycle.test.ts` (Total 62 passing tests across 26 test suites).
-- Technical documentation in `docs/modules/video-lifecycle/`.
+- `PlaybackTrackingEngine` top-level playback telemetry tracking engine.
+- `PlaybackTracker` capturing 16 DOM playback events (`timeupdate`, `ratechange`, `volumechange`, `durationchange`, `progress`, `seeking`, `seeked`, `waiting`, `playing`, `pause`, `ended`, `stalled`, `resize`, `enterpictureinpicture`, `leavepictureinpicture`, `fullscreenchange`).
+- `PlaybackSnapshotManager` computing time deltas, progress percentages, session duration, and snapshot ring history.
+- `PlaybackMetricsCollector` aggregating watch time, pause count, seek count, buffer count, fullscreen time, and PIP time.
+- `PlaybackStateResolver` extracting current `PlaybackState` from HTMLVideoElement properties.
+- `PlaybackRegistry` managing playback session records.
+- 13 new EventBus topics (`playback.started`, `playback.updated`, `playback.paused`, `playback.seek_started`, `playback.seek_completed`, `playback.rate_changed`, `playback.volume_changed`, `playback.progress`, `playback.buffering`, `playback.resumed`, `playback.ended`, `playback.fullscreen_changed`, `playback.pip_changed`).
+- Custom errors (`PlaybackTrackingError`, `PlaybackSnapshotError`, `PlaybackMetricsError`).
+- 3 new unit test files across `src/test/playbacktracker.test.ts`, `src/test/playbacksnapshot.test.ts`, and `src/test/playbackmetrics.test.ts` (Total 65 passing tests across 29 test suites).
+- Technical documentation in `docs/modules/playback-tracking/`.
