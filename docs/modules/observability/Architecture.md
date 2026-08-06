@@ -1,25 +1,12 @@
-# Observability & Metrics System - Architecture
+# Observability, Logging & Diagnostics Platform - Architecture Blueprint
 
-## Overview
-This document specifies the technical details for the **Architecture** of the **Observability & Metrics System**.
-
-### Module Summary
-- **Module Name**: `Observability & Metrics System`
-- **ID**: `observability`
-- **Document**: `Architecture.md`
-
-### Core Specifications
-- **Design Pattern**: Clean Architecture, SOLID, Interface-driven.
-- **Dependencies**: Injected via Service Container.
-- **Observability**: Metrics & structured logs emitted to central telemetry.
-
-```typescript
-// Public Contract Example for Observability & Metrics System
-export interface IObservability {
-  initialize(): Promise<void>;
-  dispose(): Promise<void>;
-}
+```mermaid
+graph TD
+  Logger --> Providers[MemoryLogProvider / ConsoleLogProvider]
+  Logger --> EventBus[EventBus: system.diagnostic]
+  MetricsManager --> EventBus
+  TraceManager --> EventBus
+  Profiler --> PerformanceMonitor
+  DiagnosticsManager --> HealthMonitor
+  DiagnosticsManager --> StateManager
 ```
-
----
-*Generated as part of the Video Fact-Checking Chrome Extension Architecture Documentation.*

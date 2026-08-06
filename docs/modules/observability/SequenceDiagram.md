@@ -1,25 +1,10 @@
-# Observability & Metrics System - SequenceDiagram
+# Observability, Logging & Diagnostics Platform - Sequence Diagram
 
-## Overview
-This document specifies the technical details for the **SequenceDiagram** of the **Observability & Metrics System**.
-
-### Module Summary
-- **Module Name**: `Observability & Metrics System`
-- **ID**: `observability`
-- **Document**: `SequenceDiagram.md`
-
-### Core Specifications
-- **Design Pattern**: Clean Architecture, SOLID, Interface-driven.
-- **Dependencies**: Injected via Service Container.
-- **Observability**: Metrics & structured logs emitted to central telemetry.
-
-```typescript
-// Public Contract Example for Observability & Metrics System
-export interface IObservability {
-  initialize(): Promise<void>;
-  dispose(): Promise<void>;
-}
+```mermaid
+sequenceDiagram
+  Client->>TraceManager: startSpan("Verification")
+  Client->>Logger: info("Querying search provider")
+  Logger->>MemoryLogProvider: writeLog(entry)
+  Client->>TraceManager: finishSpan(spanId)
+  TraceManager->>EventBus: publish("system.diagnostic", { event: "TraceFinished" })
 ```
-
----
-*Generated as part of the Video Fact-Checking Chrome Extension Architecture Documentation.*

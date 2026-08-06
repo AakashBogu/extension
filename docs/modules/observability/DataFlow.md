@@ -1,25 +1,3 @@
-# Observability & Metrics System - DataFlow
+# Observability, Logging & Diagnostics Platform - Data Flow & Lifecycle
 
-## Overview
-This document specifies the technical details for the **DataFlow** of the **Observability & Metrics System**.
-
-### Module Summary
-- **Module Name**: `Observability & Metrics System`
-- **ID**: `observability`
-- **Document**: `DataFlow.md`
-
-### Core Specifications
-- **Design Pattern**: Clean Architecture, SOLID, Interface-driven.
-- **Dependencies**: Injected via Service Container.
-- **Observability**: Metrics & structured logs emitted to central telemetry.
-
-```typescript
-// Public Contract Example for Observability & Metrics System
-export interface IObservability {
-  initialize(): Promise<void>;
-  dispose(): Promise<void>;
-}
-```
-
----
-*Generated as part of the Video Fact-Checking Chrome Extension Architecture Documentation.*
+1. Module calls Logger/Metrics/Trace -> 2. Processed by Provider -> 3. Emitted to EventBus system.diagnostic -> 4. Available for RuntimeInspector & DevTools.

@@ -1,25 +1,14 @@
-# Observability & Metrics System - README
+# Observability, Logging & Diagnostics Platform - Technical Overview
 
-## Overview
-This document specifies the technical details for the **README** of the **Observability & Metrics System**.
+## Summary
+Production-grade observability platform featuring structured JSON logging, metrics, performance timers, distributed tracing spans, health checks, diagnostic reports, and runtime context inspection.
 
-### Module Summary
-- **Module Name**: `Observability & Metrics System`
-- **ID**: `observability`
-- **Document**: `README.md`
-
-### Core Specifications
-- **Design Pattern**: Clean Architecture, SOLID, Interface-driven.
-- **Dependencies**: Injected via Service Container.
-- **Observability**: Metrics & structured logs emitted to central telemetry.
-
-```typescript
-// Public Contract Example for Observability & Metrics System
-export interface IObservability {
-  initialize(): Promise<void>;
-  dispose(): Promise<void>;
-}
-```
-
----
-*Generated as part of the Video Fact-Checking Chrome Extension Architecture Documentation.*
+## Components Implemented
+- `Logger`: Implementation of `ILogger` supporting levels trace, debug, info, warn, error, fatal.
+- Log Providers: `ConsoleLogProvider` and `MemoryLogProvider`.
+- `MetricsManager`: Counters, gauges, histograms, and timers.
+- `PerformanceMonitor` & `Profiler`: Execution timers, operation statistics, and scoped profiling.
+- `TraceManager`: Trace IDs, span IDs, and parent-child span lifecycle.
+- `HealthMonitor`: Aggregated system and component health checks.
+- `DiagnosticsManager` & `RuntimeInspector`: Comprehensive diagnostic reports and runtime context inspection.
+- `DebugManager`: Debug mode toggles.

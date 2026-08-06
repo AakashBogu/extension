@@ -1,25 +1,20 @@
-# Observability & Metrics System - PublicAPI
-
-## Overview
-This document specifies the technical details for the **PublicAPI** of the **Observability & Metrics System**.
-
-### Module Summary
-- **Module Name**: `Observability & Metrics System`
-- **ID**: `observability`
-- **Document**: `PublicAPI.md`
-
-### Core Specifications
-- **Design Pattern**: Clean Architecture, SOLID, Interface-driven.
-- **Dependencies**: Injected via Service Container.
-- **Observability**: Metrics & structured logs emitted to central telemetry.
+# Observability, Logging & Diagnostics Platform - Public API Specifications
 
 ```typescript
-// Public Contract Example for Observability & Metrics System
-export interface IObservability {
-  initialize(): Promise<void>;
-  dispose(): Promise<void>;
+export class Logger implements ILogger {
+  trace(msg, ctx?): void;
+  debug(msg, ctx?): void;
+  info(msg, ctx?): void;
+  warn(msg, ctx?): void;
+  error(msg, err?, ctx?): void;
+  fatal(msg, err?, ctx?): void;
+}
+export class MetricsManager {
+  incrementCounter(name, value?, labels?): void;
+  setGauge(name, value, labels?): void;
+}
+export class TraceManager {
+  startSpan(name, parentSpanId?): Span;
+  finishSpan(spanId, tags?): Span;
 }
 ```
-
----
-*Generated as part of the Video Fact-Checking Chrome Extension Architecture Documentation.*
