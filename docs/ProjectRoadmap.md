@@ -13,7 +13,8 @@
 - [x] **Module 2E: Active Video Selection Engine** (ActiveVideoManager, ActiveVideoSelector, VideoScoringEngine, VisibilityTracker, ViewportObserver, FocusTracker, InteractionTracker)
 - [x] **Module 2F: Browser Integration & End-to-End Validation** (BrowserIntegrationManager, BrowserPipeline, BrowserHealthMonitor, BrowserCleanupManager, BrowserCompatibilityManager, BrowserPerformanceManager, BrowserValidationManager, DeveloperValidationHarness)
 - [x] **Module 3A: Offscreen Audio Runtime** (OffscreenRuntimeManager, OffscreenDocumentManager, OffscreenAudioRuntime, AudioContextRuntime, OffscreenBridge, OffscreenMessageRouter, OffscreenCapabilityManager, OffscreenHealthMonitor, OffscreenRecoveryManager)
-- [ ] **Module 3B: Real-Time Tab Audio Capturer & VAD Engine**
+- [x] **Module 3B: Real-Time Tab Audio Capturer Engine** (TabAudioCaptureManager, TabAudioCaptureController, TabCaptureSessionManager, TabCaptureStreamManager, TabCapturePermissionManager, TabCaptureCapabilityManager, TabCaptureHealthMonitor, TabCaptureRecoveryManager, TabAudioCaptureHarness)
+- [ ] **Module 3C: Audio Processing & VAD Engine**
 - [ ] **Module 4: Speech Transcription Pipeline**
 - [ ] **Module 5: Claim Detection Engine**
 - [ ] **Module 6: AI & Search Provider Abstraction Layer**

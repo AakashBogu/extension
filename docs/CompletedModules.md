@@ -10,4 +10,8 @@
 
 ## Module 3A: Offscreen Audio Runtime
 - **Date Completed**: 2026-08-14
-- **Deliverables**: `OffscreenDocumentManager` (MV3 offscreen creation & destruction), `AudioContextRuntime` (`suspended`/`running`/`closed` lifecycle), `OffscreenAudioRuntime` facade, `OffscreenBridge` (`IOffscreenBridge` typed messaging protocol), `OffscreenMessageRouter` (message validation & correlation ID matching), `OffscreenCapabilityManager`, `OffscreenHealthMonitor` & Heartbeat, `OffscreenRecoveryManager` (exponential backoff recovery), 15 new EventBus topics, and `src/test/offscreendocument.test.ts`, `src/test/offscreenmessaging.test.ts`, `src/test/offscreenhealth.test.ts`, `src/test/offscreenrecovery.test.ts`.
+- **Deliverables**: `OffscreenDocumentManager`, `AudioContextRuntime`, `OffscreenAudioRuntime` facade, `OffscreenBridge`, `OffscreenMessageRouter`, `OffscreenCapabilityManager`, `OffscreenHealthMonitor`, `OffscreenRecoveryManager`.
+
+## Module 3B: Real-Time Tab Audio Capture Engine
+- **Date Completed**: 2026-08-14
+- **Deliverables**: `TabAudioCaptureManager`, `TabCaptureSessionManager`, `TabCaptureStreamManager` (audio track validation & ended detection), `TabCapturePermissionManager`, `TabCaptureCapabilityManager`, `TabCaptureHealthMonitor`, `TabCaptureRecoveryManager`, `TabAudioCaptureController` (browser runtime & active video integration), `TabAudioCaptureHarness`, 16 new EventBus topics, and `src/test/tabaudiocapture.test.ts`, `src/test/tabcapturesession.test.ts`, `src/test/tabcapturestream.test.ts`, `src/test/tabcapturerecovery.test.ts`.

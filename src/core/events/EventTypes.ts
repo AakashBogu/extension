@@ -1,5 +1,5 @@
 /**
- * Event Types & Topic Definitions (Module 3A Specification)
+ * Event Types & Topic Definitions (Module 3B Specification)
  */
 export type EventTopic =
   | 'audio.captured'
@@ -76,7 +76,6 @@ export type EventTopic =
   | 'resource_cleanup.completed'
   | 'compatibility_check.completed'
   | 'performance_report.ready'
-  // Module 3A Offscreen Audio Runtime Topics
   | 'offscreen.creating'
   | 'offscreen.created'
   | 'offscreen.initializing'
@@ -91,7 +90,24 @@ export type EventTopic =
   | 'offscreen.heartbeat'
   | 'offscreen.recovery_started'
   | 'offscreen.recovery_completed'
-  | 'offscreen.recovery_failed';
+  | 'offscreen.recovery_failed'
+  // Module 3B Tab Audio Capture Topics
+  | 'audio.capture_requested'
+  | 'audio.capture_starting'
+  | 'audio.capture_started'
+  | 'audio.capture_active'
+  | 'audio.capture_paused'
+  | 'audio.capture_resumed'
+  | 'audio.capture_stopping'
+  | 'audio.capture_stopped'
+  | 'audio.capture_track_ended'
+  | 'audio.capture_error'
+  | 'audio.capture_health_changed'
+  | 'audio.capture_recovery_started'
+  | 'audio.capture_recovery_completed'
+  | 'audio.capture_recovery_failed'
+  | 'audio.capture_tab_invalid'
+  | 'audio.capture_capability_changed';
 
 export type EventPriority = 'LOW' | 'NORMAL' | 'HIGH' | 'CRITICAL';
 
