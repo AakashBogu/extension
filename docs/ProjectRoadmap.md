@@ -12,7 +12,8 @@
 - [x] **Module 2D: Playback Tracking Engine** (PlaybackTrackingEngine, PlaybackTracker, PlaybackRegistry, PlaybackSnapshotManager, PlaybackMetricsCollector, PlaybackStateResolver)
 - [x] **Module 2E: Active Video Selection Engine** (ActiveVideoManager, ActiveVideoSelector, VideoScoringEngine, VisibilityTracker, ViewportObserver, FocusTracker, InteractionTracker)
 - [x] **Module 2F: Browser Integration & End-to-End Validation** (BrowserIntegrationManager, BrowserPipeline, BrowserHealthMonitor, BrowserCleanupManager, BrowserCompatibilityManager, BrowserPerformanceManager, BrowserValidationManager, DeveloperValidationHarness)
-- [ ] **Module 3: Real-Time Tab Audio Capturer & Offscreen Audio Processor**
+- [x] **Module 3A: Offscreen Audio Runtime** (OffscreenRuntimeManager, OffscreenDocumentManager, OffscreenAudioRuntime, AudioContextRuntime, OffscreenBridge, OffscreenMessageRouter, OffscreenCapabilityManager, OffscreenHealthMonitor, OffscreenRecoveryManager)
+- [ ] **Module 3B: Real-Time Tab Audio Capturer & VAD Engine**
 - [ ] **Module 4: Speech Transcription Pipeline**
 - [ ] **Module 5: Claim Detection Engine**
 - [ ] **Module 6: AI & Search Provider Abstraction Layer**

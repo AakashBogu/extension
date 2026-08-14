@@ -1,5 +1,5 @@
 /**
- * Event Types & Topic Definitions (Module 2F Specification)
+ * Event Types & Topic Definitions (Module 3A Specification)
  */
 export type EventTopic =
   | 'audio.captured'
@@ -68,7 +68,6 @@ export type EventTopic =
   | 'video.score_updated'
   | 'video.candidate_added'
   | 'video.candidate_removed'
-  // Module 2F Pipeline & Integration Topics
   | 'browser_pipeline.ready'
   | 'browser_pipeline.error'
   | 'video_pipeline.ready'
@@ -76,7 +75,23 @@ export type EventTopic =
   | 'health_check.completed'
   | 'resource_cleanup.completed'
   | 'compatibility_check.completed'
-  | 'performance_report.ready';
+  | 'performance_report.ready'
+  // Module 3A Offscreen Audio Runtime Topics
+  | 'offscreen.creating'
+  | 'offscreen.created'
+  | 'offscreen.initializing'
+  | 'offscreen.ready'
+  | 'offscreen.started'
+  | 'offscreen.stopped'
+  | 'offscreen.suspended'
+  | 'offscreen.resumed'
+  | 'offscreen.destroyed'
+  | 'offscreen.error'
+  | 'offscreen.health_changed'
+  | 'offscreen.heartbeat'
+  | 'offscreen.recovery_started'
+  | 'offscreen.recovery_completed'
+  | 'offscreen.recovery_failed';
 
 export type EventPriority = 'LOW' | 'NORMAL' | 'HIGH' | 'CRITICAL';
 

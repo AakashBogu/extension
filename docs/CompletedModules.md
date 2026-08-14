@@ -6,10 +6,8 @@
 
 ## Module 2 Browser & Video Platform Suite (2A-2F)
 - **Date Completed**: 2026-08-06
-- **Deliverables**:
-  - Module 2A: `BrowserRuntime`, `TabManager`, `WindowManager`, `NavigationManager` (SPA navigation support).
-  - Module 2B: `VideoDiscoveryEngine`, `VideoRegistry`, `VideoLocator` (open Shadow DOM traversal), `VideoObserver`.
-  - Module 2C: `VideoLifecycleManager`, `VideoStateMachine` (14 validated states), `VideoStateResolver`.
-  - Module 2D: `PlaybackTrackingEngine`, `PlaybackTracker`, `PlaybackSnapshotManager`, `PlaybackMetricsCollector`.
-  - Module 2E: `ActiveVideoManager`, `VideoScoringEngine` (multi-factor scoring), `ViewportObserver`.
-  - Module 2F: `BrowserIntegrationManager`, `BrowserPipeline`, `BrowserHealthMonitor`, `BrowserCleanupManager`, `BrowserCompatibilityManager`, `BrowserPerformanceManager`, `BrowserValidationManager`, `DeveloperValidationHarness`.
+- **Deliverables**: Complete browser runtime, video discovery engine, lifecycle state machine, playback tracking engine, active video selection engine, and integration validation pipeline.
+
+## Module 3A: Offscreen Audio Runtime
+- **Date Completed**: 2026-08-14
+- **Deliverables**: `OffscreenDocumentManager` (MV3 offscreen creation & destruction), `AudioContextRuntime` (`suspended`/`running`/`closed` lifecycle), `OffscreenAudioRuntime` facade, `OffscreenBridge` (`IOffscreenBridge` typed messaging protocol), `OffscreenMessageRouter` (message validation & correlation ID matching), `OffscreenCapabilityManager`, `OffscreenHealthMonitor` & Heartbeat, `OffscreenRecoveryManager` (exponential backoff recovery), 15 new EventBus topics, and `src/test/offscreendocument.test.ts`, `src/test/offscreenmessaging.test.ts`, `src/test/offscreenhealth.test.ts`, `src/test/offscreenrecovery.test.ts`.
