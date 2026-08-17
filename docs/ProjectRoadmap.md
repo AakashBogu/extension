@@ -14,7 +14,7 @@
 - [x] **Module 2F: Browser Integration & End-to-End Validation** (BrowserIntegrationManager, BrowserPipeline, BrowserHealthMonitor, BrowserCleanupManager, BrowserCompatibilityManager, BrowserPerformanceManager, BrowserValidationManager, DeveloperValidationHarness)
 - [x] **Module 3A: Offscreen Audio Runtime** (OffscreenRuntimeManager, OffscreenDocumentManager, OffscreenAudioRuntime, AudioContextRuntime, OffscreenBridge, OffscreenMessageRouter, OffscreenCapabilityManager, OffscreenHealthMonitor, OffscreenRecoveryManager)
 - [x] **Module 3B: Real-Time Tab Audio Capturer Engine** (TabAudioCaptureManager, TabAudioCaptureController, TabCaptureSessionManager, TabCaptureStreamManager, TabCapturePermissionManager, TabCaptureCapabilityManager, TabCaptureHealthMonitor, TabCaptureRecoveryManager, TabAudioCaptureHarness)
-- [ ] **Module 3C: Audio Processing & VAD Engine**
+- [x] **Module 3C: Real-Time Audio Processing & VAD Engine** (AudioProcessingEngine, AudioProcessor, PCMExtractor, ChannelMixer, AudioResampler, AudioFrameGenerator, AudioChunkManager, AudioSignalAnalyzer, VoiceActivityDetector, SpeechSegmentManager, AudioProcessingRegistry)
 - [ ] **Module 4: Speech Transcription Pipeline**
 - [ ] **Module 5: Claim Detection Engine**
 - [ ] **Module 6: AI & Search Provider Abstraction Layer**

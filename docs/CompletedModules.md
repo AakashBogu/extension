@@ -8,10 +8,9 @@
 - **Date Completed**: 2026-08-06
 - **Deliverables**: Complete browser runtime, video discovery engine, lifecycle state machine, playback tracking engine, active video selection engine, and integration validation pipeline.
 
-## Module 3A: Offscreen Audio Runtime
-- **Date Completed**: 2026-08-14
-- **Deliverables**: `OffscreenDocumentManager`, `AudioContextRuntime`, `OffscreenAudioRuntime` facade, `OffscreenBridge`, `OffscreenMessageRouter`, `OffscreenCapabilityManager`, `OffscreenHealthMonitor`, `OffscreenRecoveryManager`.
-
-## Module 3B: Real-Time Tab Audio Capture Engine
-- **Date Completed**: 2026-08-14
-- **Deliverables**: `TabAudioCaptureManager`, `TabCaptureSessionManager`, `TabCaptureStreamManager` (audio track validation & ended detection), `TabCapturePermissionManager`, `TabCaptureCapabilityManager`, `TabCaptureHealthMonitor`, `TabCaptureRecoveryManager`, `TabAudioCaptureController` (browser runtime & active video integration), `TabAudioCaptureHarness`, 16 new EventBus topics, and `src/test/tabaudiocapture.test.ts`, `src/test/tabcapturesession.test.ts`, `src/test/tabcapturestream.test.ts`, `src/test/tabcapturerecovery.test.ts`.
+## Module 3 Audio Capture & Processing Suite (3A-3C)
+- **Date Completed**: 2026-08-17
+- **Deliverables**:
+  - Module 3A: `OffscreenDocumentManager`, `AudioContextRuntime`, `OffscreenAudioRuntime` facade, `OffscreenBridge`, `OffscreenMessageRouter`, `OffscreenRecoveryManager`.
+  - Module 3B: `TabAudioCaptureManager`, `TabCaptureSessionManager`, `TabCaptureStreamManager`, `TabCapturePermissionManager`, `TabCaptureCapabilityManager`, `TabCaptureHealthMonitor`, `TabCaptureRecoveryManager`.
+  - Module 3C: `AudioProcessingEngine`, `AudioProcessor`, `PCMExtractor`, `ChannelMixer`, `AudioResampler` (16kHz normalization), `AudioFrameGenerator` (20ms frames), `AudioChunkManager` (1s chunks), `AudioSignalAnalyzer`, `VoiceActivityDetector` (hybrid adaptive noise floor VAD), `SpeechSegmentManager`, `AudioProcessingRegistry`, 14 new EventBus topics, and unit test suites passing 100%.

@@ -1,15 +1,19 @@
 # System Changelog
 
-## [3.1.0-module3b] - 2026-08-14
+## [3.2.0-module3c] - 2026-08-17
 ### Added
-- `TabAudioCaptureManager` top-level tab audio capture facade.
-- `TabCaptureSessionManager` managing session lifecycle (`IDLE`, `REQUESTING`, `STARTING`, `ACTIVE`, `PAUSED`, `STOPPING`, `STOPPED`, `ERROR`, `RECOVERING`, `DESTROYED`).
-- `TabCaptureStreamManager` for `MediaStream` audio track discovery, track monitoring (`readyState === "live"`), and ended track handling.
-- `TabCapturePermissionManager` and `TabCaptureCapabilityManager`.
-- `TabCaptureHealthMonitor` and `TabCaptureRecoveryManager` for exponential backoff stream recovery.
-- `TabAudioCaptureController` subscribing to `tab.removed` and `active_video.changed` events.
-- `TabAudioCaptureHarness` developer diagnostic harness.
-- 16 new EventBus topics (`audio.capture_requested`, `audio.capture_starting`, `audio.capture_started`, `audio.capture_active`, `audio.capture_paused`, `audio.capture_resumed`, `audio.capture_stopping`, `audio.capture_stopped`, `audio.capture_track_ended`, `audio.capture_error`, `audio.capture_health_changed`, `audio.capture_recovery_started`, `audio.capture_recovery_completed`, `audio.capture_recovery_failed`, `audio.capture_tab_invalid`, `audio.capture_capability_changed`).
-- Custom errors (`TabAudioCaptureError`, `TabCapturePermissionError`, `TabCaptureCapabilityError`, `TabCaptureSessionError`, `TabCaptureStreamError`, `TabCaptureValidationError`, `TabCaptureRecoveryError`, `TabCaptureTimeoutError`).
-- 4 new unit test files across `src/test/tabaudiocapture.test.ts`, `src/test/tabcapturesession.test.ts`, `src/test/tabcapturestream.test.ts`, and `src/test/tabcapturerecovery.test.ts` (Total 83 passing tests across 44 test suites).
-- Technical documentation in `docs/modules/tab-audio-capture/`.
+- `AudioProcessingEngine` top-level real-time audio processing facade.
+- `AudioProcessor` composite processing orchestrator.
+- `PCMExtractor` Float32 PCM extractor with NaN and Infinity sanitization.
+- `ChannelMixer` supporting `MONO_AVERAGE`, `LEFT`, `RIGHT`, and `MAX_ENERGY` mono conversion.
+- `AudioResampler` sample rate converter with sample continuity tracking (e.g. 48kHz -> 16kHz).
+- `AudioFrameGenerator` slicing continuous PCM into 20ms frames (320 samples @ 16kHz).
+- `AudioChunkManager` aggregating frames into 1s transcription chunks.
+- `AudioSignalAnalyzer` calculating RMS, Peak, ZCR, and dB.
+- `VoiceActivityDetector` hybrid VAD with adaptive noise floor estimation, speech persistence (3 frames), and hangover (500ms).
+- `SpeechSegmentManager` tracking and finalizing speech segment intervals.
+- `AudioProcessingRegistry` tracking processing metrics and dropped frames.
+- 14 new EventBus topics (`audio.processing_started`, `audio.processing_stopped`, `audio.processing_paused`, `audio.processing_resumed`, `audio.pcm_frame`, `audio.chunk_ready`, `audio.signal_metrics`, `audio.vad_state_changed`, `audio.speech_started`, `audio.speech_ended`, `audio.speech_segment_ready`, `audio.processing_error`, `audio.processing_health_changed`, `audio.noise_floor_updated`).
+- Custom errors (`AudioProcessingError`, `PCMExtractionError`, `ResamplingError`, `FrameGenerationError`, `AudioChunkError`, `VADProcessingError`, `SpeechSegmentError`, `AudioBackpressureError`).
+- 7 new unit and adversarial test files across `src/test/pcmextractor.test.ts`, `src/test/audioresampler.test.ts`, `src/test/audioframegenerator.test.ts`, `src/test/audiosignal.test.ts`, `src/test/vad.test.ts`, `src/test/speechsegment.test.ts`, and `src/test/audioprocessing.test.ts` (Total 91 passing tests across 51 test suites).
+- Technical documentation in `docs/modules/audio-processing/`.

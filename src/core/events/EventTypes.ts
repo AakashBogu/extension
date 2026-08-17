@@ -1,5 +1,5 @@
 /**
- * Event Types & Topic Definitions (Module 3B Specification)
+ * Event Types & Topic Definitions (Module 3C Specification)
  */
 export type EventTopic =
   | 'audio.captured'
@@ -91,7 +91,6 @@ export type EventTopic =
   | 'offscreen.recovery_started'
   | 'offscreen.recovery_completed'
   | 'offscreen.recovery_failed'
-  // Module 3B Tab Audio Capture Topics
   | 'audio.capture_requested'
   | 'audio.capture_starting'
   | 'audio.capture_started'
@@ -107,7 +106,22 @@ export type EventTopic =
   | 'audio.capture_recovery_completed'
   | 'audio.capture_recovery_failed'
   | 'audio.capture_tab_invalid'
-  | 'audio.capture_capability_changed';
+  | 'audio.capture_capability_changed'
+  // Module 3C Audio Processing & VAD Topics
+  | 'audio.processing_started'
+  | 'audio.processing_stopped'
+  | 'audio.processing_paused'
+  | 'audio.processing_resumed'
+  | 'audio.pcm_frame'
+  | 'audio.chunk_ready'
+  | 'audio.signal_metrics'
+  | 'audio.vad_state_changed'
+  | 'audio.speech_started'
+  | 'audio.speech_ended'
+  | 'audio.speech_segment_ready'
+  | 'audio.processing_error'
+  | 'audio.processing_health_changed'
+  | 'audio.noise_floor_updated';
 
 export type EventPriority = 'LOW' | 'NORMAL' | 'HIGH' | 'CRITICAL';
 
