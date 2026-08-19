@@ -1,5 +1,5 @@
 /**
- * Event Types & Topic Definitions (Module 6E Specification)
+ * Event Types & Topic Definitions (Module 6F Specification)
  */
 export type EventTopic =
   | 'audio.captured'
@@ -150,6 +150,9 @@ export type EventTopic =
   | 'speech.recognition_resumed'
   | 'speech.recognition_stopped'
   | 'speech.recognition_error'
+  | 'speech.recovery_started'
+  | 'speech.recovery_completed'
+  | 'speech.recovery_failed'
   | 'speech.recognition_recovery_started'
   | 'speech.recognition_recovery_completed'
   | 'speech.recognition_recovery_failed'
@@ -220,7 +223,6 @@ export type EventTopic =
   | 'provider.execution_recovery_started'
   | 'provider.execution_recovery_completed'
   | 'provider.execution_recovery_failed'
-  // Module 6E Cache Topics
   | 'provider.cache_initialized'
   | 'provider.cache_hit'
   | 'provider.cache_miss'
@@ -231,7 +233,9 @@ export type EventTopic =
   | 'provider.cache_cleared'
   | 'provider.cache_deduplicated'
   | 'provider.cache_error'
-  | 'provider.cache_health_changed';
+  | 'provider.cache_health_changed'
+  | 'provider.usage_recorded'
+  | 'provider.usage_reset';
 
 export type EventPriority = 'LOW' | 'NORMAL' | 'HIGH' | 'CRITICAL';
 

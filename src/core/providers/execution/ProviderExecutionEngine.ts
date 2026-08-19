@@ -18,6 +18,7 @@ import { ProviderConcurrencyError, ProviderRequestValidationError, ProviderFallb
 import { ProviderResponseCache } from '../cache/ProviderResponseCache';
 import { ProviderInFlightDeduplicator } from '../cache/ProviderInFlightDeduplicator';
 import { ProviderCacheKeyGenerator } from '../cache/ProviderCacheKeyGenerator';
+import { ProviderUsageTracker } from '../limits/ProviderUsageTracker';
 import { IEventBus } from '../../events/IEventBus';
 
 export class ProviderExecutionEngine {
@@ -32,6 +33,7 @@ export class ProviderExecutionEngine {
   public readonly recoveryManager: ProviderExecutionRecoveryManager;
   public readonly responseCache: ProviderResponseCache;
   public readonly deduplicator: ProviderInFlightDeduplicator;
+  public readonly usageTracker: ProviderUsageTracker;
 
   constructor(
     public readonly aiRouter: AIProviderRouter,
@@ -41,6 +43,7 @@ export class ProviderExecutionEngine {
     public readonly healthManager: ProviderHealthManager,
     policyConfig?: ProviderExecutionPolicy | ExecutionPolicyConfig,
     responseCache?: ProviderResponseCache,
+    usageTracker?: ProviderUsageTracker,
     private eventBus?: IEventBus
   ) {
     this.policy = policyConfig instanceof ProviderExecutionPolicy ? policyConfig : new ProviderExecutionPolicy(policyConfig);
@@ -52,6 +55,7 @@ export class ProviderExecutionEngine {
     this.recoveryManager = new ProviderExecutionRecoveryManager(this.lifecycleManager, this.cancellationManager, this.metricsCollector, eventBus);
     this.responseCache = responseCache || new ProviderResponseCache(undefined, undefined, eventBus);
     this.deduplicator = new ProviderInFlightDeduplicator(this.responseCache.metricsCollector, eventBus);
+    this.usageTracker = usageTracker || new ProviderUsageTracker(eventBus);
   }
 
   async initialize(): Promise<void> {
@@ -110,6 +114,7 @@ export class ProviderExecutionEngine {
             provider = candidates[0];
           }
 
+          this.usageTracker.recordRequestStart(provider.id, request.requestId);
           this.lifecycleManager.transitionTo(request.requestId, 'EXECUTING', { providerId: provider.id });
           const response = await provider.analyze({ ...request, timeoutMs });
           const normalized = ProviderResponseNormalizer.normalizeAIResponse(response);
@@ -119,15 +124,42 @@ export class ProviderExecutionEngine {
           this.cancellationManager.removeController(request.requestId);
           executionActive = false;
 
-          // Insert into Cache
+          // Insert into Cache & Usage Tracker
           this.responseCache.set(cacheKey, 'AI', normalized, undefined, normalized.providerId);
+          this.usageTracker.recordRequestSuccess({
+            recordId: `rec_${Date.now()}_${request.requestId}`,
+            providerId: provider.id,
+            requestId: request.requestId,
+            operationType: request.operation,
+            requestCount: attemptCount,
+            inputTokens: normalized.tokenUsage?.promptTokens,
+            outputTokens: normalized.tokenUsage?.completionTokens,
+            totalTokens: normalized.tokenUsage?.totalTokens,
+            durationMs: Date.now() - startTime,
+            timestamp: Date.now(),
+            cacheHit: false
+          }, normalized.modelName);
 
           return normalized;
         } catch (err: unknown) {
-          if (provider) excludedProviders.add(provider.id);
+          if (provider) {
+            excludedProviders.add(provider.id);
+            this.usageTracker.recordRequestFailure({
+              recordId: `rec_${Date.now()}_${request.requestId}`,
+              providerId: provider.id,
+              requestId: request.requestId,
+              operationType: request.operation,
+              requestCount: attemptCount,
+              durationMs: Date.now() - startTime,
+              timestamp: Date.now(),
+              cacheHit: false
+            });
+          }
+
           const errMsg = err instanceof Error ? err.message : String(err);
 
           if (this.retryManager.shouldRetry(err, attemptCount)) {
+            if (provider) this.usageTracker.recordRetry(provider.id);
             this.metricsCollector.recordRetry();
             this.lifecycleManager.transitionTo(request.requestId, 'RETRYING', { error: errMsg });
             await this.retryManager.calculateBackoffAndDelay(attemptCount);
@@ -137,6 +169,7 @@ export class ProviderExecutionEngine {
           if (this.policy.fallbackEnabled && fallbackCount < this.policy.maxFallbackProviders) {
             const remaining = this.aiRegistry.getEnabled().filter(p => p.capabilities.operations.includes(request.operation) && !excludedProviders.has(p.id));
             if (remaining.length > 0) {
+              if (provider) this.usageTracker.recordFallback(provider.id);
               fallbackCount++;
               this.metricsCollector.recordFallback();
               this.lifecycleManager.transitionTo(request.requestId, 'FALLBACK', { error: errMsg });
@@ -204,6 +237,7 @@ export class ProviderExecutionEngine {
             provider = candidates[0];
           }
 
+          this.usageTracker.recordRequestStart(provider.id, request.requestId);
           this.lifecycleManager.transitionTo(request.requestId, 'EXECUTING', { providerId: provider.id });
           const response = await provider.search({ ...request, timeoutMs });
           const normalized = ProviderResponseNormalizer.normalizeSearchResponse(response);
@@ -213,15 +247,37 @@ export class ProviderExecutionEngine {
           this.cancellationManager.removeController(request.requestId);
           executionActive = false;
 
-          // Insert into Cache
+          // Insert into Cache & Usage Tracker
           this.responseCache.set(cacheKey, 'SEARCH', normalized, undefined, normalized.providerId);
+          this.usageTracker.recordRequestSuccess({
+            recordId: `rec_${Date.now()}_${request.requestId}`,
+            providerId: provider.id,
+            requestId: request.requestId,
+            requestCount: attemptCount,
+            durationMs: Date.now() - startTime,
+            timestamp: Date.now(),
+            cacheHit: false
+          });
 
           return normalized;
         } catch (err: unknown) {
-          if (provider) excludedProviders.add(provider.id);
+          if (provider) {
+            excludedProviders.add(provider.id);
+            this.usageTracker.recordRequestFailure({
+              recordId: `rec_${Date.now()}_${request.requestId}`,
+              providerId: provider.id,
+              requestId: request.requestId,
+              requestCount: attemptCount,
+              durationMs: Date.now() - startTime,
+              timestamp: Date.now(),
+              cacheHit: false
+            });
+          }
+
           const errMsg = err instanceof Error ? err.message : String(err);
 
           if (this.retryManager.shouldRetry(err, attemptCount)) {
+            if (provider) this.usageTracker.recordRetry(provider.id);
             this.metricsCollector.recordRetry();
             this.lifecycleManager.transitionTo(request.requestId, 'RETRYING', { error: errMsg });
             await this.retryManager.calculateBackoffAndDelay(attemptCount);
@@ -231,6 +287,7 @@ export class ProviderExecutionEngine {
           if (this.policy.fallbackEnabled && fallbackCount < this.policy.maxFallbackProviders) {
             const remaining = this.searchRegistry.getEnabled().filter(p => !excludedProviders.has(p.id));
             if (remaining.length > 0) {
+              if (provider) this.usageTracker.recordFallback(provider.id);
               fallbackCount++;
               this.metricsCollector.recordFallback();
               this.lifecycleManager.transitionTo(request.requestId, 'FALLBACK', { error: errMsg });
@@ -290,6 +347,7 @@ export class ProviderExecutionEngine {
     await this.recoveryManager.recoverSubsystem('Engine shutdown');
     this.responseCache.clear();
     this.deduplicator.clear();
+    this.usageTracker.resetAll();
     this.status = 'STOPPED';
   }
 
@@ -299,6 +357,7 @@ export class ProviderExecutionEngine {
     this.metricsCollector.clear();
     this.responseCache.clear();
     this.deduplicator.clear();
+    this.usageTracker.resetAll();
     this.status = 'DESTROYED';
   }
 
