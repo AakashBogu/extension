@@ -9,6 +9,7 @@ import { IEventBus } from '../../events/IEventBus';
 export class ProviderUsageTracker {
   private collector = new ProviderUsageMetricsCollector();
   private bucketManager = new ProviderUsageBucketManager();
+  private readonly standardWindows: RateLimitWindow[] = ['SECOND', 'MINUTE', 'HOUR', 'DAY', 'MONTH'];
 
   constructor(private eventBus?: IEventBus) {}
 
@@ -21,15 +22,21 @@ export class ProviderUsageTracker {
 
   recordRequestSuccess(record: ProviderUsageRecord, modelId?: string): void {
     this.collector.recordRequestSuccess(record.providerId, record);
-    const minBucket = this.bucketManager.getOrCreateBucket(record.providerId, 'MINUTE');
-    this.bucketManager.recordUsage(minBucket, record, true);
-
     if (modelId) {
       const modelKey = `${record.providerId}:${modelId}`;
       this.collector.recordRequestSuccess(modelKey, record);
-      const modelBucket = this.bucketManager.getOrCreateBucket(modelKey, 'MINUTE');
-      this.bucketManager.recordUsage(modelBucket, record, true);
     }
+
+    this.standardWindows.forEach(win => {
+      const bucket = this.bucketManager.getOrCreateBucket(record.providerId, win);
+      this.bucketManager.recordUsage(bucket, record, true);
+
+      if (modelId) {
+        const modelKey = `${record.providerId}:${modelId}`;
+        const modelBucket = this.bucketManager.getOrCreateBucket(modelKey, win);
+        this.bucketManager.recordUsage(modelBucket, record, true);
+      }
+    });
 
     if (this.eventBus) {
       this.eventBus.publish('provider.usage_recorded', {
@@ -45,15 +52,21 @@ export class ProviderUsageTracker {
 
   recordRequestFailure(record: ProviderUsageRecord, modelId?: string): void {
     this.collector.recordRequestFailure(record.providerId, record);
-    const minBucket = this.bucketManager.getOrCreateBucket(record.providerId, 'MINUTE');
-    this.bucketManager.recordUsage(minBucket, record, false);
-
     if (modelId) {
       const modelKey = `${record.providerId}:${modelId}`;
       this.collector.recordRequestFailure(modelKey, record);
-      const modelBucket = this.bucketManager.getOrCreateBucket(modelKey, 'MINUTE');
-      this.bucketManager.recordUsage(modelBucket, record, false);
     }
+
+    this.standardWindows.forEach(win => {
+      const bucket = this.bucketManager.getOrCreateBucket(record.providerId, win);
+      this.bucketManager.recordUsage(bucket, record, false);
+
+      if (modelId) {
+        const modelKey = `${record.providerId}:${modelId}`;
+        const modelBucket = this.bucketManager.getOrCreateBucket(modelKey, win);
+        this.bucketManager.recordUsage(modelBucket, record, false);
+      }
+    });
 
     if (this.eventBus) {
       this.eventBus.publish('provider.usage_recorded', {

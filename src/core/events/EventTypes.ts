@@ -235,7 +235,10 @@ export type EventTopic =
   | 'provider.cache_error'
   | 'provider.cache_health_changed'
   | 'provider.usage_recorded'
-  | 'provider.usage_reset';
+  | 'provider.usage_reset'
+  // Module 6F.3 Rate Limit State Topics
+  | 'provider.rate_limit_updated'
+  | 'provider.rate_limit_exhausted';
 
 export type EventPriority = 'LOW' | 'NORMAL' | 'HIGH' | 'CRITICAL';
 
