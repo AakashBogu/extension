@@ -19,6 +19,9 @@ import { ProviderResponseCache } from '../cache/ProviderResponseCache';
 import { ProviderInFlightDeduplicator } from '../cache/ProviderInFlightDeduplicator';
 import { ProviderCacheKeyGenerator } from '../cache/ProviderCacheKeyGenerator';
 import { ProviderUsageTracker } from '../limits/ProviderUsageTracker';
+import { ProviderRateLimitStateTracker } from '../limits/ProviderRateLimitStateTracker';
+import { ProviderAdmissionController } from '../limits/ProviderAdmissionController';
+import { ProviderAdmissionError } from '../../error/ProviderLimitErrors';
 import { IEventBus } from '../../events/IEventBus';
 
 export class ProviderExecutionEngine {
@@ -34,6 +37,8 @@ export class ProviderExecutionEngine {
   public readonly responseCache: ProviderResponseCache;
   public readonly deduplicator: ProviderInFlightDeduplicator;
   public readonly usageTracker: ProviderUsageTracker;
+  public readonly rateLimitTracker: ProviderRateLimitStateTracker;
+  public readonly admissionController: ProviderAdmissionController;
 
   constructor(
     public readonly aiRouter: AIProviderRouter,
@@ -44,6 +49,8 @@ export class ProviderExecutionEngine {
     policyConfig?: ProviderExecutionPolicy | ExecutionPolicyConfig,
     responseCache?: ProviderResponseCache,
     usageTracker?: ProviderUsageTracker,
+    rateLimitTracker?: ProviderRateLimitStateTracker,
+    admissionController?: ProviderAdmissionController,
     private eventBus?: IEventBus
   ) {
     this.policy = policyConfig instanceof ProviderExecutionPolicy ? policyConfig : new ProviderExecutionPolicy(policyConfig);
@@ -56,10 +63,13 @@ export class ProviderExecutionEngine {
     this.responseCache = responseCache || new ProviderResponseCache(undefined, undefined, eventBus);
     this.deduplicator = new ProviderInFlightDeduplicator(this.responseCache.metricsCollector, eventBus);
     this.usageTracker = usageTracker || new ProviderUsageTracker(eventBus);
+    this.rateLimitTracker = rateLimitTracker || new ProviderRateLimitStateTracker(this.usageTracker, eventBus);
+    this.admissionController = admissionController || new ProviderAdmissionController(this.rateLimitTracker, this.usageTracker, undefined, eventBus);
   }
 
   async initialize(): Promise<void> {
     this.status = 'INITIALIZING';
+    await this.admissionController.initialize();
     if (this.eventBus) {
       this.eventBus.publish('provider.execution_initialized', { timestamp: Date.now() });
     }
@@ -114,6 +124,18 @@ export class ProviderExecutionEngine {
             provider = candidates[0];
           }
 
+          // 3. Admission Control Check
+          const activeConcurrentCount = this.lifecycleManager.getActiveRecords().length;
+          const admissionResult = this.admissionController.evaluate(request, provider.id, activeConcurrentCount, this.policy.maxConcurrentRequests);
+          if (admissionResult.decision !== 'ALLOWED') {
+            throw new ProviderAdmissionError(admissionResult.reason, {
+              providerId: provider.id,
+              requestId: request.requestId,
+              retryable: false,
+              details: { decision: admissionResult.decision }
+            });
+          }
+
           this.usageTracker.recordRequestStart(provider.id, request.requestId);
           this.lifecycleManager.transitionTo(request.requestId, 'EXECUTING', { providerId: provider.id });
           const response = await provider.analyze({ ...request, timeoutMs });
@@ -142,6 +164,14 @@ export class ProviderExecutionEngine {
 
           return normalized;
         } catch (err: unknown) {
+          if (err instanceof ProviderAdmissionError) {
+            this.lifecycleManager.transitionTo(request.requestId, 'FAILED', { error: err.message });
+            this.metricsCollector.recordFailure();
+            this.cancellationManager.removeController(request.requestId);
+            executionActive = false;
+            throw err;
+          }
+
           if (provider) {
             excludedProviders.add(provider.id);
             this.usageTracker.recordRequestFailure({
@@ -237,6 +267,18 @@ export class ProviderExecutionEngine {
             provider = candidates[0];
           }
 
+          // 3. Admission Control Check
+          const activeConcurrentCount = this.lifecycleManager.getActiveRecords().length;
+          const admissionResult = this.admissionController.evaluate(request, provider.id, activeConcurrentCount, this.policy.maxConcurrentRequests);
+          if (admissionResult.decision !== 'ALLOWED') {
+            throw new ProviderAdmissionError(admissionResult.reason, {
+              providerId: provider.id,
+              requestId: request.requestId,
+              retryable: false,
+              details: { decision: admissionResult.decision }
+            });
+          }
+
           this.usageTracker.recordRequestStart(provider.id, request.requestId);
           this.lifecycleManager.transitionTo(request.requestId, 'EXECUTING', { providerId: provider.id });
           const response = await provider.search({ ...request, timeoutMs });
@@ -261,6 +303,14 @@ export class ProviderExecutionEngine {
 
           return normalized;
         } catch (err: unknown) {
+          if (err instanceof ProviderAdmissionError) {
+            this.lifecycleManager.transitionTo(request.requestId, 'FAILED', { error: err.message });
+            this.metricsCollector.recordFailure();
+            this.cancellationManager.removeController(request.requestId);
+            executionActive = false;
+            throw err;
+          }
+
           if (provider) {
             excludedProviders.add(provider.id);
             this.usageTracker.recordRequestFailure({
@@ -348,6 +398,7 @@ export class ProviderExecutionEngine {
     this.responseCache.clear();
     this.deduplicator.clear();
     this.usageTracker.resetAll();
+    this.admissionController.reset();
     this.status = 'STOPPED';
   }
 
@@ -358,6 +409,7 @@ export class ProviderExecutionEngine {
     this.responseCache.clear();
     this.deduplicator.clear();
     this.usageTracker.resetAll();
+    this.admissionController.destroy();
     this.status = 'DESTROYED';
   }
 

@@ -20,11 +20,15 @@
 - **Date Completed**: 2026-08-19
 - **Deliverables**: Complete real-time claim detection facade, sentence segmenter, claim candidate detectors, classifiers, normalizers, confidence/priority engines, deduplication manager, and `VerifiableClaim` boundary object.
 
-## Module 6 AI & Search Provider Abstraction Layer Suite (6A-6E)
-- **Date Completed**: 2026-08-19
+## Module 6 AI & Search Provider Abstraction Layer Suite (6A-6F.4)
+- **Date Completed**: 2026-08-20
 - **Deliverables**:
   - Module 6A: `ISearchProvider`, `IAIProvider`, `SearchRequest`, `SearchResponse`, `AIRequest`, `AIResponse`, `ProviderTypes`, `ProviderErrors`.
   - Module 6B: `AIProviderRegistry`, `SearchProviderRegistry`, `ProviderValidator`, `AIProviderRouter`, `SearchProviderRouter`, `ProviderHealthManager`, `ProviderRecoveryManager`.
-  - Module 6C: `OpenAIProvider` (`ai.openai`), `GeminiProvider` (`ai.gemini`), `BraveSearchProvider` (`search.brave`), `BingSearchProvider` (`search.bing`), `HttpClient`, `ProviderCredentialManager`, `ProviderConfigurationValidator`, `ProviderBootstrap`.
+  - Module 6C: `OpenAIProvider` (`ai.openai`), `GeminiProvider` (`ai.gemini`), `BraveSearchProvider` (`search.brave`), `BingSearchProvider` (`search.bing`), `HttpClient`, `ProviderCredentialManager`, `ProviderBootstrap`.
   - Module 6D: `ProviderExecutionEngine`, `RequestLifecycleManager`, `ProviderExecutionPolicy`, `ProviderRetryManager`, `ProviderRequestCancellationManager`, `ProviderResponseNormalizer`, `ProviderExecutionMetricsCollector`, `ProviderExecutionHealthMonitor`, `ProviderExecutionRecoveryManager`.
-  - Module 6E: `ProviderResponseCache`, `ProviderCacheKeyGenerator`, `ProviderCachePolicy`, `ProviderCacheEvictionManager`, `ProviderInFlightDeduplicator`, `ProviderCacheMetricsCollector`, `ProviderCacheHealthMonitor`, `ProviderCacheInvalidationManager`, 11 new EventBus topics, and 7 unit test files (Total 174 passing tests across 121 test suites).
+  - Module 6E: `ProviderResponseCache`, `ProviderCacheKeyGenerator`, `ProviderCachePolicy`, `ProviderCacheEvictionManager`, `ProviderInFlightDeduplicator`, `ProviderCacheMetricsCollector`, `ProviderCacheHealthMonitor`, `ProviderCacheInvalidationManager`.
+  - Module 6F.1: Rate-limit and quota contracts, policies, error hierarchy.
+  - Module 6F.2: `ProviderUsageTracker`, usage snapshot builder, time bucket manager, usage metrics collector.
+  - Module 6F.3: `ProviderRateLimitStateTracker`, rate-limit evaluator, window manager.
+  - Module 6F.4: `ProviderAdmissionController`, `ProviderAdmissionEvaluator`, `ProviderAdmissionDecisionBuilder`, `ProviderAdmissionPolicy`, `ProviderAdmissionState`, 7 event topics, 7 new test files (Total 194 passing unit tests across 131 test suites).

@@ -24,5 +24,9 @@
   - [x] **Module 6C: Concrete Provider Adapter Layer** (OpenAIProvider, GeminiProvider, BraveSearchProvider, BingSearchProvider, HttpClient, ProviderCredentialManager, ProviderBootstrap)
   - [x] **Module 6D: Provider Execution & Request Orchestration** (ProviderExecutionEngine, RequestLifecycleManager, ProviderExecutionPolicy, ProviderRetryManager, ProviderRequestCancellationManager, ProviderResponseNormalizer, ProviderExecutionMetricsCollector, ProviderExecutionHealthMonitor, ProviderExecutionRecoveryManager)
   - [x] **Module 6E: Provider Response Caching & In-Flight Request Deduplication** (ProviderResponseCache, ProviderCacheKeyGenerator, ProviderCachePolicy, ProviderCacheEvictionManager, ProviderInFlightDeduplicator, ProviderCacheMetricsCollector, ProviderCacheHealthMonitor, ProviderCacheInvalidationManager)
+  - [x] **Module 6F.1: Rate-Limit & Quota Contracts** (ProviderRateLimitTypes, ProviderQuotaTypes, ProviderUsageTypes, ProviderLimitPolicy, ProviderQuotaPolicy, ProviderAdmissionTypes, ProviderCooldownTypes, ProviderLimitErrors)
+  - [x] **Module 6F.2: Provider Usage Tracker** (ProviderUsageTracker, ProviderUsageSnapshotBuilder, ProviderUsageBucketManager, ProviderUsageMetricsCollector)
+  - [x] **Module 6F.3: Provider Rate-Limit State Tracker** (ProviderRateLimitStateTracker, ProviderRateLimitStateTypes, ProviderRateLimitEvaluator, ProviderRateLimitWindowManager, ProviderRateLimitSnapshotBuilder)
+  - [x] **Module 6F.4: Provider Admission Controller** (ProviderAdmissionController, ProviderAdmissionEvaluator, ProviderAdmissionDecisionBuilder, ProviderAdmissionPolicy, ProviderAdmissionState)
 - [ ] **Module 7: Verification Pipeline & Multi-Source Reranker**
 - [ ] **Module 8: Synchronized Overlay UI & DevTools**

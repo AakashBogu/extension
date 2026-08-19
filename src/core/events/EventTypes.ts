@@ -236,9 +236,16 @@ export type EventTopic =
   | 'provider.cache_health_changed'
   | 'provider.usage_recorded'
   | 'provider.usage_reset'
-  // Module 6F.3 Rate Limit State Topics
   | 'provider.rate_limit_updated'
-  | 'provider.rate_limit_exhausted';
+  | 'provider.rate_limit_exhausted'
+  // Module 6F.4 Admission Topics
+  | 'provider.admission_allowed'
+  | 'provider.admission_denied'
+  | 'provider.admission_rate_limited'
+  | 'provider.admission_quota_exhausted'
+  | 'provider.admission_cooldown'
+  | 'provider.admission_capacity_exceeded'
+  | 'provider.admission_disabled';
 
 export type EventPriority = 'LOW' | 'NORMAL' | 'HIGH' | 'CRITICAL';
 
