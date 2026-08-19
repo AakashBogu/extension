@@ -1,5 +1,5 @@
 /**
- * Event Types & Topic Definitions (Module 6B Specification)
+ * Event Types & Topic Definitions (Module 6D Specification)
  */
 export type EventTopic =
   | 'audio.captured'
@@ -192,7 +192,6 @@ export type EventTopic =
   | 'claim.health_changed'
   | 'claim.backpressure'
   | 'claim.processing_dropped'
-  // Module 6B Provider Management Topics
   | 'provider.registered'
   | 'provider.unregistered'
   | 'provider.initialization_started'
@@ -205,7 +204,23 @@ export type EventTopic =
   | 'provider.routing_selected'
   | 'provider.routing_failed'
   | 'provider.request_failed'
-  | 'provider.fallback_selected';
+  | 'provider.fallback_selected'
+  // Module 6D Execution Topics
+  | 'provider.execution_initialized'
+  | 'provider.request_created'
+  | 'provider.request_queued'
+  | 'provider.request_routing'
+  | 'provider.request_started'
+  | 'provider.request_retrying'
+  | 'provider.request_fallback'
+  | 'provider.request_completed'
+  | 'provider.request_failed'
+  | 'provider.request_cancelled'
+  | 'provider.request_timeout'
+  | 'provider.execution_health_changed'
+  | 'provider.execution_recovery_started'
+  | 'provider.execution_recovery_completed'
+  | 'provider.execution_recovery_failed';
 
 export type EventPriority = 'LOW' | 'NORMAL' | 'HIGH' | 'CRITICAL';
 
