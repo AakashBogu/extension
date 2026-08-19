@@ -1,0 +1,3 @@
+# Real-Time Audio Transport, Bounded Chunk Queue & Speech Pipeline Boundary - Event Specifications
+
+Publishes 22 EventBus topics: audio.transport_initialized, audio.transport_started, audio.transport_paused, audio.transport_resumed, audio.transport_draining, audio.transport_stopped, audio.transport_chunk_received, audio.transport_chunk_queued, audio.transport_chunk_delivered, audio.transport_chunk_dropped, audio.transport_chunk_rejected, audio.transport_sequence_gap, audio.transport_duplicate_chunk, audio.transport_out_of_order, audio.transport_backpressure, audio.transport_health_changed, audio.transport_error, audio.transport_recovery_started, audio.transport_recovery_completed, audio.transport_recovery_failed, audio.speech_pipeline_ready, audio.speech_pipeline_error.

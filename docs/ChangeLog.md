@@ -1,19 +1,15 @@
 # System Changelog
 
-## [3.2.0-module3c] - 2026-08-17
+## [3.3.0-module3d] - 2026-08-19
 ### Added
-- `AudioProcessingEngine` top-level real-time audio processing facade.
-- `AudioProcessor` composite processing orchestrator.
-- `PCMExtractor` Float32 PCM extractor with NaN and Infinity sanitization.
-- `ChannelMixer` supporting `MONO_AVERAGE`, `LEFT`, `RIGHT`, and `MAX_ENERGY` mono conversion.
-- `AudioResampler` sample rate converter with sample continuity tracking (e.g. 48kHz -> 16kHz).
-- `AudioFrameGenerator` slicing continuous PCM into 20ms frames (320 samples @ 16kHz).
-- `AudioChunkManager` aggregating frames into 1s transcription chunks.
-- `AudioSignalAnalyzer` calculating RMS, Peak, ZCR, and dB.
-- `VoiceActivityDetector` hybrid VAD with adaptive noise floor estimation, speech persistence (3 frames), and hangover (500ms).
-- `SpeechSegmentManager` tracking and finalizing speech segment intervals.
-- `AudioProcessingRegistry` tracking processing metrics and dropped frames.
-- 14 new EventBus topics (`audio.processing_started`, `audio.processing_stopped`, `audio.processing_paused`, `audio.processing_resumed`, `audio.pcm_frame`, `audio.chunk_ready`, `audio.signal_metrics`, `audio.vad_state_changed`, `audio.speech_started`, `audio.speech_ended`, `audio.speech_segment_ready`, `audio.processing_error`, `audio.processing_health_changed`, `audio.noise_floor_updated`).
-- Custom errors (`AudioProcessingError`, `PCMExtractionError`, `ResamplingError`, `FrameGenerationError`, `AudioChunkError`, `VADProcessingError`, `SpeechSegmentError`, `AudioBackpressureError`).
-- 7 new unit and adversarial test files across `src/test/pcmextractor.test.ts`, `src/test/audioresampler.test.ts`, `src/test/audioframegenerator.test.ts`, `src/test/audiosignal.test.ts`, `src/test/vad.test.ts`, `src/test/speechsegment.test.ts`, and `src/test/audioprocessing.test.ts` (Total 91 passing tests across 51 test suites).
-- Technical documentation in `docs/modules/audio-processing/`.
+- `AudioTransportEngine` top-level real-time audio transport facade.
+- `AudioChunkQueue` bounded FIFO queue supporting `DROP_OLDEST`, `DROP_NEWEST`, and `REJECT` backpressure drop strategies.
+- `AudioChunkTransport` chunk payload validation and sequence ordering / gap / duplicate detection.
+- `AudioChunkSerializer` for ArrayBuffer in-memory context transfers.
+- `AudioTransportRouter` routing to `SPEECH_PIPELINE`.
+- `SpeechPipelineBoundary`, `SpeechPipelineAdapter`, and `NullSpeechPipelineAdapter` establishing the abstract contract for Module 4.
+- `AudioTransportHealthMonitor` and `AudioTransportRecoveryManager`.
+- 22 new EventBus topics (`audio.transport_initialized`, `audio.transport_started`, `audio.transport_paused`, `audio.transport_resumed`, `audio.transport_draining`, `audio.transport_stopped`, `audio.transport_chunk_received`, `audio.transport_chunk_queued`, `audio.transport_chunk_delivered`, `audio.transport_chunk_dropped`, `audio.transport_chunk_rejected`, `audio.transport_sequence_gap`, `audio.transport_duplicate_chunk`, `audio.transport_out_of_order`, `audio.transport_backpressure`, `audio.transport_health_changed`, `audio.transport_error`, `audio.transport_recovery_started`, `audio.transport_recovery_completed`, `audio.transport_recovery_failed`, `audio.speech_pipeline_ready`, `audio.speech_pipeline_error`).
+- Custom errors (`AudioTransportError`, `AudioQueueFullError`, `AudioTransportValidationError`, `AudioTransportSequenceError`, `SpeechPipelineBoundaryError`, `SpeechPipelineAdapterError`, `AudioTransportRecoveryError`, `AudioTransportTimeoutError`).
+- 5 new unit and integration test files across `src/test/audiochunkqueue.test.ts`, `src/test/speechpipelineboundary.test.ts`, `src/test/audiotransporthealth.test.ts`, `src/test/audiotransportrecovery.test.ts`, and `src/test/audiotransport.test.ts` (Total 97 passing tests across 56 test suites).
+- Technical documentation in `docs/modules/audio-transport/`.

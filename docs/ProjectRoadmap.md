@@ -15,6 +15,7 @@
 - [x] **Module 3A: Offscreen Audio Runtime** (OffscreenRuntimeManager, OffscreenDocumentManager, OffscreenAudioRuntime, AudioContextRuntime, OffscreenBridge, OffscreenMessageRouter, OffscreenCapabilityManager, OffscreenHealthMonitor, OffscreenRecoveryManager)
 - [x] **Module 3B: Real-Time Tab Audio Capturer Engine** (TabAudioCaptureManager, TabAudioCaptureController, TabCaptureSessionManager, TabCaptureStreamManager, TabCapturePermissionManager, TabCaptureCapabilityManager, TabCaptureHealthMonitor, TabCaptureRecoveryManager, TabAudioCaptureHarness)
 - [x] **Module 3C: Real-Time Audio Processing & VAD Engine** (AudioProcessingEngine, AudioProcessor, PCMExtractor, ChannelMixer, AudioResampler, AudioFrameGenerator, AudioChunkManager, AudioSignalAnalyzer, VoiceActivityDetector, SpeechSegmentManager, AudioProcessingRegistry)
+- [x] **Module 3D: Audio Transport, Bounded Queue & Speech Pipeline Boundary** (AudioTransportEngine, AudioChunkQueue, AudioChunkTransport, AudioChunkSerializer, AudioTransportRouter, SpeechPipelineBoundary, SpeechPipelineAdapter, NullSpeechPipelineAdapter, AudioTransportHealthMonitor, AudioTransportRecoveryManager)
 - [ ] **Module 4: Speech Transcription Pipeline**
 - [ ] **Module 5: Claim Detection Engine**
 - [ ] **Module 6: AI & Search Provider Abstraction Layer**

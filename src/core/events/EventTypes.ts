@@ -1,5 +1,5 @@
 /**
- * Event Types & Topic Definitions (Module 3C Specification)
+ * Event Types & Topic Definitions (Module 3D Specification)
  */
 export type EventTopic =
   | 'audio.captured'
@@ -107,7 +107,6 @@ export type EventTopic =
   | 'audio.capture_recovery_failed'
   | 'audio.capture_tab_invalid'
   | 'audio.capture_capability_changed'
-  // Module 3C Audio Processing & VAD Topics
   | 'audio.processing_started'
   | 'audio.processing_stopped'
   | 'audio.processing_paused'
@@ -121,7 +120,30 @@ export type EventTopic =
   | 'audio.speech_segment_ready'
   | 'audio.processing_error'
   | 'audio.processing_health_changed'
-  | 'audio.noise_floor_updated';
+  | 'audio.noise_floor_updated'
+  // Module 3D Transport & Pipeline Boundary Topics
+  | 'audio.transport_initialized'
+  | 'audio.transport_started'
+  | 'audio.transport_paused'
+  | 'audio.transport_resumed'
+  | 'audio.transport_draining'
+  | 'audio.transport_stopped'
+  | 'audio.transport_chunk_received'
+  | 'audio.transport_chunk_queued'
+  | 'audio.transport_chunk_delivered'
+  | 'audio.transport_chunk_dropped'
+  | 'audio.transport_chunk_rejected'
+  | 'audio.transport_sequence_gap'
+  | 'audio.transport_duplicate_chunk'
+  | 'audio.transport_out_of_order'
+  | 'audio.transport_backpressure'
+  | 'audio.transport_health_changed'
+  | 'audio.transport_error'
+  | 'audio.transport_recovery_started'
+  | 'audio.transport_recovery_completed'
+  | 'audio.transport_recovery_failed'
+  | 'audio.speech_pipeline_ready'
+  | 'audio.speech_pipeline_error';
 
 export type EventPriority = 'LOW' | 'NORMAL' | 'HIGH' | 'CRITICAL';
 

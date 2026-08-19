@@ -8,9 +8,10 @@
 - **Date Completed**: 2026-08-06
 - **Deliverables**: Complete browser runtime, video discovery engine, lifecycle state machine, playback tracking engine, active video selection engine, and integration validation pipeline.
 
-## Module 3 Audio Capture & Processing Suite (3A-3C)
-- **Date Completed**: 2026-08-17
+## Module 3 Audio Capture, Processing & Transport Suite (3A-3D)
+- **Date Completed**: 2026-08-19
 - **Deliverables**:
   - Module 3A: `OffscreenDocumentManager`, `AudioContextRuntime`, `OffscreenAudioRuntime` facade, `OffscreenBridge`, `OffscreenMessageRouter`, `OffscreenRecoveryManager`.
   - Module 3B: `TabAudioCaptureManager`, `TabCaptureSessionManager`, `TabCaptureStreamManager`, `TabCapturePermissionManager`, `TabCaptureCapabilityManager`, `TabCaptureHealthMonitor`, `TabCaptureRecoveryManager`.
-  - Module 3C: `AudioProcessingEngine`, `AudioProcessor`, `PCMExtractor`, `ChannelMixer`, `AudioResampler` (16kHz normalization), `AudioFrameGenerator` (20ms frames), `AudioChunkManager` (1s chunks), `AudioSignalAnalyzer`, `VoiceActivityDetector` (hybrid adaptive noise floor VAD), `SpeechSegmentManager`, `AudioProcessingRegistry`, 14 new EventBus topics, and unit test suites passing 100%.
+  - Module 3C: `AudioProcessingEngine`, `AudioProcessor`, `PCMExtractor`, `ChannelMixer`, `AudioResampler`, `AudioFrameGenerator`, `AudioChunkManager`, `AudioSignalAnalyzer`, `VoiceActivityDetector`, `SpeechSegmentManager`, `AudioProcessingRegistry`.
+  - Module 3D: `AudioTransportEngine`, `AudioChunkQueue` (bounded FIFO queue with `DROP_OLDEST`), `AudioChunkTransport` (sequence validation & gap detection), `AudioChunkSerializer`, `AudioTransportRouter`, `SpeechPipelineBoundary`, `ISpeechPipelineAdapter` & `NullSpeechPipelineAdapter`, `AudioTransportHealthMonitor`, `AudioTransportRecoveryManager`, 22 new EventBus topics, and unit test suites passing 100%.
