@@ -1,25 +1,3 @@
-# Claim Detection Module - DataFlow
+# Real-Time Claim Detection & Extraction Engine - Data Flow & Lifecycle
 
-## Overview
-This document specifies the technical details for the **DataFlow** of the **Claim Detection Module**.
-
-### Module Summary
-- **Module Name**: `Claim Detection Module`
-- **ID**: `claim-detection`
-- **Document**: `DataFlow.md`
-
-### Core Specifications
-- **Design Pattern**: Clean Architecture, SOLID, Interface-driven.
-- **Dependencies**: Injected via Service Container.
-- **Observability**: Metrics & structured logs emitted to central telemetry.
-
-```typescript
-// Public Contract Example for Claim Detection Module
-export interface IClaimDetection {
-  initialize(): Promise<void>;
-  dispose(): Promise<void>;
-}
-```
-
----
-*Generated as part of the Video Fact-Checking Chrome Extension Architecture Documentation.*
+1. Module 4 emits TranscriptSegmentRecord / FinalizedTranscript -> 2. ClaimDetectionEngine updates TranscriptWindowManager -> 3. SentenceSegmenter splits text -> 4. ClaimCandidateDetector identifies candidates -> 5. ClaimExtractor & ClaimNormalizer clean text -> 6. ClaimClassifier & VerifiabilityClassifier tag categories -> 7. ConfidenceScorer & PriorityEngine rank claim -> 8. ClaimDeduplicationManager merges duplicates -> 9. ClaimRegistry stores VerifiableClaim -> 10. Emits claim.ready_for_verification event for Module 6.

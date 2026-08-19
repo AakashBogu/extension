@@ -1,25 +1,11 @@
-# Claim Detection Module - SequenceDiagram
+# Real-Time Claim Detection & Extraction Engine - Sequence Diagram
 
-## Overview
-This document specifies the technical details for the **SequenceDiagram** of the **Claim Detection Module**.
-
-### Module Summary
-- **Module Name**: `Claim Detection Module`
-- **ID**: `claim-detection`
-- **Document**: `SequenceDiagram.md`
-
-### Core Specifications
-- **Design Pattern**: Clean Architecture, SOLID, Interface-driven.
-- **Dependencies**: Injected via Service Container.
-- **Observability**: Metrics & structured logs emitted to central telemetry.
-
-```typescript
-// Public Contract Example for Claim Detection Module
-export interface IClaimDetection {
-  initialize(): Promise<void>;
-  dispose(): Promise<void>;
-}
+```mermaid
+sequenceDiagram
+  SpeechRecognitionEngine->>ClaimDetectionEngine: processTranscriptSegment(segment)
+  ClaimDetectionEngine->>ClaimCandidateDetector: isClaimCandidate(text)
+  ClaimDetectionEngine->>ClaimExtractor: extractProposition(sentence)
+  ClaimDetectionEngine->>ClaimNormalizer: normalizeClaimText(text)
+  ClaimDetectionEngine->>ClaimDeduplicationManager: processCandidate(candidate)
+  ClaimDetectionEngine->>EventBus: publish("claim.ready_for_verification", candidate)
 ```
-
----
-*Generated as part of the Video Fact-Checking Chrome Extension Architecture Documentation.*

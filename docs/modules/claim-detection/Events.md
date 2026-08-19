@@ -1,25 +1,3 @@
-# Claim Detection Module - Events
+# Real-Time Claim Detection & Extraction Engine - Event Specifications
 
-## Overview
-This document specifies the technical details for the **Events** of the **Claim Detection Module**.
-
-### Module Summary
-- **Module Name**: `Claim Detection Module`
-- **ID**: `claim-detection`
-- **Document**: `Events.md`
-
-### Core Specifications
-- **Design Pattern**: Clean Architecture, SOLID, Interface-driven.
-- **Dependencies**: Injected via Service Container.
-- **Observability**: Metrics & structured logs emitted to central telemetry.
-
-```typescript
-// Public Contract Example for Claim Detection Module
-export interface IClaimDetection {
-  initialize(): Promise<void>;
-  dispose(): Promise<void>;
-}
-```
-
----
-*Generated as part of the Video Fact-Checking Chrome Extension Architecture Documentation.*
+Publishes 24 EventBus topics: claim.detection_initialized, claim.detection_ready, claim.detection_started, claim.detection_paused, claim.detection_resumed, claim.detection_stopped, claim.detection_error, claim.candidate_detected, claim.extracted, claim.normalized, claim.classified, claim.scored, claim.queued, claim.ready_for_verification, claim.duplicate_detected, claim.merged, claim.priority_changed, claim.provider_registered, claim.provider_selected, claim.provider_failed, claim.provider_switched, claim.health_changed, claim.backpressure, claim.processing_dropped.

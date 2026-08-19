@@ -14,11 +14,17 @@
 
 ## Module 4 Speech Transcription Pipeline Suite
 - **Date Completed**: 2026-08-19
+- **Deliverables**: Complete provider-agnostic speech recognition engine, session manager, transcript aggregator, and `FinalizedTranscript` boundary object.
+
+## Module 5 Real-Time Claim Detection Engine Suite
+- **Date Completed**: 2026-08-19
 - **Deliverables**:
-  - `SpeechRecognitionEngine` top-level recognition pipeline orchestrator.
-  - `ISpeechRecognitionProvider` abstract provider interface & `NullSpeechRecognitionProvider` default testable implementation.
-  - `SpeechProviderRegistry` & `SpeechProviderRouter` with priority-based vendor fallback routing.
-  - `RecognitionSessionManager` session lifecycle manager.
-  - `PartialTranscriptManager`, `TranscriptSegmentRegistry`, `TranscriptDeduplicationManager`, `TranscriptTimestampNormalizer`, `TranscriptQualityManager`, and `TranscriptAggregator`.
-  - `FinalizedTranscript` object boundary feeding Module 5.
-  - 25 new EventBus topics and 14 new unit test files (Total 111 passing tests across 70 test suites).
+  - `ClaimDetectionEngine` top-level real-time claim detection facade.
+  - `SentenceSegmenter`, `ClaimExtractor`, `ClaimNormalizer` (spoken numbers/percentages/dates).
+  - `ClaimCandidateDetector` with 6 specialized signal detectors (`NumericalClaimDetector`, `TemporalClaimDetector`, `EntityClaimDetector`, `CausalClaimDetector`, `ComparativeClaimDetector`, `AttributionClaimDetector`).
+  - `ClaimClassifier`, `ClaimVerifiabilityClassifier`, `ClaimConfidenceScorer`, `ClaimPriorityEngine`.
+  - `ClaimEntityExtractor` extracting numbers, percentages, dates, locations.
+  - `IClaimAnalysisProvider` & `NullClaimAnalysisProvider` NLP provider abstraction.
+  - `ClaimRegistry` & `ClaimDeduplicationManager` handling occurrence counts and canonical claims.
+  - `VerifiableClaim` object boundary feeding Module 6.
+  - 24 new EventBus topics and 18 new unit test files (Total 129 passing tests across 88 test suites).

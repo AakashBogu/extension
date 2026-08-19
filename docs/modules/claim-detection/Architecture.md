@@ -1,25 +1,17 @@
-# Claim Detection Module - Architecture
+# Real-Time Claim Detection & Extraction Engine - Architecture Blueprint
 
-## Overview
-This document specifies the technical details for the **Architecture** of the **Claim Detection Module**.
-
-### Module Summary
-- **Module Name**: `Claim Detection Module`
-- **ID**: `claim-detection`
-- **Document**: `Architecture.md`
-
-### Core Specifications
-- **Design Pattern**: Clean Architecture, SOLID, Interface-driven.
-- **Dependencies**: Injected via Service Container.
-- **Observability**: Metrics & structured logs emitted to central telemetry.
-
-```typescript
-// Public Contract Example for Claim Detection Module
-export interface IClaimDetection {
-  initialize(): Promise<void>;
-  dispose(): Promise<void>;
-}
+```mermaid
+graph TD
+  Module4[Module 4: Speech Recognition Pipeline] --> Engine[ClaimDetectionEngine]
+  Engine --> Window[TranscriptWindowManager]
+  Engine --> Segmenter[SentenceSegmenter]
+  Segmenter --> Detector[ClaimCandidateDetector]
+  Detector --> Extractor[ClaimExtractor]
+  Extractor --> Normalizer[ClaimNormalizer]
+  Normalizer --> Classifier[ClaimClassifier]
+  Classifier --> Verifiability[ClaimVerifiabilityClassifier]
+  Verifiability --> Priority[ClaimPriorityEngine]
+  Priority --> Deduplication[ClaimDeduplicationManager]
+  Deduplication --> Registry[ClaimRegistry]
+  Registry --> Output[VerifiableClaim - Module 6 Boundary]
 ```
-
----
-*Generated as part of the Video Fact-Checking Chrome Extension Architecture Documentation.*

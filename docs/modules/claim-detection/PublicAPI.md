@@ -1,25 +1,18 @@
-# Claim Detection Module - PublicAPI
-
-## Overview
-This document specifies the technical details for the **PublicAPI** of the **Claim Detection Module**.
-
-### Module Summary
-- **Module Name**: `Claim Detection Module`
-- **ID**: `claim-detection`
-- **Document**: `PublicAPI.md`
-
-### Core Specifications
-- **Design Pattern**: Clean Architecture, SOLID, Interface-driven.
-- **Dependencies**: Injected via Service Container.
-- **Observability**: Metrics & structured logs emitted to central telemetry.
+# Real-Time Claim Detection & Extraction Engine - Public API Specifications
 
 ```typescript
-// Public Contract Example for Claim Detection Module
-export interface IClaimDetection {
+export class ClaimDetectionEngine {
   initialize(): Promise<void>;
-  dispose(): Promise<void>;
+  start(): Promise<void>;
+  stop(): Promise<void>;
+  pause(): Promise<void>;
+  resume(): Promise<void>;
+  processTranscriptSegment(segment: TranscriptSegmentRecord): ClaimCandidate[];
+  processFinalizedTranscript(transcript: FinalizedTranscript): ClaimCandidate[];
+  getVerifiableClaims(): VerifiableClaim[];
+  getStatus(): ClaimDetectionStatus;
+  getMetrics(): ClaimDetectionMetrics;
+  healthCheck(): Promise<ClaimDetectionHealth>;
+  destroy(): void;
 }
 ```
-
----
-*Generated as part of the Video Fact-Checking Chrome Extension Architecture Documentation.*

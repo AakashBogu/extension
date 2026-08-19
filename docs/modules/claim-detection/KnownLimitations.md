@@ -1,25 +1,4 @@
-# Claim Detection Module - KnownLimitations
+# Real-Time Claim Detection & Extraction Engine - Known Limitations
 
-## Overview
-This document specifies the technical details for the **KnownLimitations** of the **Claim Detection Module**.
-
-### Module Summary
-- **Module Name**: `Claim Detection Module`
-- **ID**: `claim-detection`
-- **Document**: `KnownLimitations.md`
-
-### Core Specifications
-- **Design Pattern**: Clean Architecture, SOLID, Interface-driven.
-- **Dependencies**: Injected via Service Container.
-- **Observability**: Metrics & structured logs emitted to central telemetry.
-
-```typescript
-// Public Contract Example for Claim Detection Module
-export interface IClaimDetection {
-  initialize(): Promise<void>;
-  dispose(): Promise<void>;
-}
-```
-
----
-*Generated as part of the Video Fact-Checking Chrome Extension Architecture Documentation.*
+- Module 5 identifies, classifies, scores, and extracts verifiable claim candidates; it does NOT perform fact-checking, web search, or truth labeling (Module 6 will handle verification).
+- NLP analysis provider is defaulted to `NullClaimAnalysisProvider` (rule-based extraction).

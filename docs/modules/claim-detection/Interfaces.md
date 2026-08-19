@@ -1,25 +1,20 @@
-# Claim Detection Module - Interfaces
-
-## Overview
-This document specifies the technical details for the **Interfaces** of the **Claim Detection Module**.
-
-### Module Summary
-- **Module Name**: `Claim Detection Module`
-- **ID**: `claim-detection`
-- **Document**: `Interfaces.md`
-
-### Core Specifications
-- **Design Pattern**: Clean Architecture, SOLID, Interface-driven.
-- **Dependencies**: Injected via Service Container.
-- **Observability**: Metrics & structured logs emitted to central telemetry.
+# Real-Time Claim Detection & Extraction Engine - Interfaces & Type Contracts
 
 ```typescript
-// Public Contract Example for Claim Detection Module
-export interface IClaimDetection {
-  initialize(): Promise<void>;
-  dispose(): Promise<void>;
+export interface VerifiableClaim {
+  claimId: string;
+  text: string;
+  normalizedText: string;
+  classification: ClaimTypeCategory[];
+  verifiability: ClaimVerifiabilityLevel;
+  confidence: number;
+  priority: ClaimPriorityLevel;
+  entities: ClaimEntity[];
+  provenance: ClaimProvenance;
+  timestamps: {
+    startTime: number;
+    endTime: number;
+  };
+  occurrenceCount: number;
 }
 ```
-
----
-*Generated as part of the Video Fact-Checking Chrome Extension Architecture Documentation.*

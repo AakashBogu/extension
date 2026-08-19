@@ -1,5 +1,5 @@
 /**
- * Event Types & Topic Definitions (Module 4 Specification)
+ * Event Types & Topic Definitions (Module 5 Specification)
  */
 export type EventTopic =
   | 'audio.captured'
@@ -143,7 +143,6 @@ export type EventTopic =
   | 'audio.transport_recovery_failed'
   | 'audio.speech_pipeline_ready'
   | 'audio.speech_pipeline_error'
-  // Module 4 Speech Recognition Topics
   | 'speech.recognition_initialized'
   | 'speech.recognition_started'
   | 'speech.recognition_ready'
@@ -168,7 +167,32 @@ export type EventTopic =
   | 'speech.health_changed'
   | 'speech.backpressure'
   | 'speech.result_dropped'
-  | 'speech.sequence_gap';
+  | 'speech.sequence_gap'
+  // Module 5 Claim Detection Topics
+  | 'claim.detection_initialized'
+  | 'claim.detection_ready'
+  | 'claim.detection_started'
+  | 'claim.detection_paused'
+  | 'claim.detection_resumed'
+  | 'claim.detection_stopped'
+  | 'claim.detection_error'
+  | 'claim.candidate_detected'
+  | 'claim.extracted'
+  | 'claim.normalized'
+  | 'claim.classified'
+  | 'claim.scored'
+  | 'claim.queued'
+  | 'claim.ready_for_verification'
+  | 'claim.duplicate_detected'
+  | 'claim.merged'
+  | 'claim.priority_changed'
+  | 'claim.provider_registered'
+  | 'claim.provider_selected'
+  | 'claim.provider_failed'
+  | 'claim.provider_switched'
+  | 'claim.health_changed'
+  | 'claim.backpressure'
+  | 'claim.processing_dropped';
 
 export type EventPriority = 'LOW' | 'NORMAL' | 'HIGH' | 'CRITICAL';
 
