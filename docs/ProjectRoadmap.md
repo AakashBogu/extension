@@ -18,8 +18,9 @@
 - [x] **Module 3D: Audio Transport, Bounded Queue & Speech Pipeline Boundary** (AudioTransportEngine, AudioChunkQueue, AudioChunkTransport, AudioChunkSerializer, AudioTransportRouter, SpeechPipelineBoundary, SpeechPipelineAdapter, NullSpeechPipelineAdapter, AudioTransportHealthMonitor, AudioTransportRecoveryManager)
 - [x] **Module 4: Speech Transcription Pipeline** (SpeechRecognitionEngine, ISpeechRecognitionProvider, NullSpeechRecognitionProvider, SpeechProviderRegistry, SpeechProviderRouter, RecognitionSessionManager, PartialTranscriptManager, TranscriptSegmentRegistry, TranscriptAggregator, SpeechLanguageManager, ConfidenceNormalizer, SpeechRecognitionHealthMonitor, SpeechRecognitionRecoveryManager, FinalizedTranscript Module 5 Boundary)
 - [x] **Module 5: Claim Detection Engine** (ClaimDetectionEngine, ClaimCandidateDetector, ClaimExtractor, ClaimNormalizer, SentenceSegmenter, ClaimClassifier, ClaimVerifiabilityClassifier, ClaimConfidenceScorer, ClaimPriorityEngine, ClaimEntityExtractor, IClaimAnalysisProvider, NullClaimAnalysisProvider, ClaimRegistry, ClaimDeduplicationManager, VerifiableClaim Module 6 Boundary)
-- [ ] **Module 6: AI & Search Provider Abstraction Layer**
+- [x] **Module 6: AI & Search Provider Abstraction Layer**
   - [x] **Module 6A: Provider Contracts** (ISearchProvider, SearchRequest, SearchResponse, SearchResult, IAIProvider, AIRequest, AIResponse, AIOperationType, ProviderErrors)
   - [x] **Module 6B: Provider Registries & Routing Layer** (AIProviderRegistry, SearchProviderRegistry, ProviderValidator, AIProviderRouter, SearchProviderRouter, ProviderHealthManager, ProviderRecoveryManager)
+  - [x] **Module 6C: Concrete Provider Adapter Layer** (OpenAIProvider, GeminiProvider, BraveSearchProvider, BingSearchProvider, HttpClient, ProviderCredentialManager, ProviderBootstrap)
 - [ ] **Module 7: Verification Pipeline & Multi-Source Reranker**
 - [ ] **Module 8: Synchronized Overlay UI & DevTools**

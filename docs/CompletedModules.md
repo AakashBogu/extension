@@ -20,8 +20,9 @@
 - **Date Completed**: 2026-08-19
 - **Deliverables**: Complete real-time claim detection facade, sentence segmenter, claim candidate detectors, classifiers, normalizers, confidence/priority engines, deduplication manager, and `VerifiableClaim` boundary object.
 
-## Module 6 AI & Search Provider Abstraction Layer
+## Module 6 AI & Search Provider Abstraction Layer Suite (6A-6C)
 - **Date Completed**: 2026-08-19
 - **Deliverables**:
   - Module 6A: `ISearchProvider`, `IAIProvider`, `SearchRequest`, `SearchResponse`, `AIRequest`, `AIResponse`, `ProviderTypes`, `ProviderErrors`.
-  - Module 6B: `AIProviderRegistry`, `SearchProviderRegistry`, `ProviderValidator`, `AIProviderRouter`, `SearchProviderRouter`, `ProviderHealthManager`, `ProviderRecoveryManager`, 13 new EventBus topics, and 7 unit test files (Total 143 passing tests across 96 test suites).
+  - Module 6B: `AIProviderRegistry`, `SearchProviderRegistry`, `ProviderValidator`, `AIProviderRouter`, `SearchProviderRouter`, `ProviderHealthManager`, `ProviderRecoveryManager`.
+  - Module 6C: `OpenAIProvider` (`ai.openai`), `GeminiProvider` (`ai.gemini`), `BraveSearchProvider` (`search.brave`), `BingSearchProvider` (`search.bing`), `HttpClient`, `ProviderCredentialManager`, `ProviderConfigurationValidator`, `ProviderBootstrap`, 8 new unit test files (Total 156 passing tests across 104 test suites).
