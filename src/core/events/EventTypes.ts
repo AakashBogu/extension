@@ -1,5 +1,5 @@
 /**
- * Event Types & Topic Definitions (Module 3D Specification)
+ * Event Types & Topic Definitions (Module 4 Specification)
  */
 export type EventTopic =
   | 'audio.captured'
@@ -121,7 +121,6 @@ export type EventTopic =
   | 'audio.processing_error'
   | 'audio.processing_health_changed'
   | 'audio.noise_floor_updated'
-  // Module 3D Transport & Pipeline Boundary Topics
   | 'audio.transport_initialized'
   | 'audio.transport_started'
   | 'audio.transport_paused'
@@ -143,7 +142,33 @@ export type EventTopic =
   | 'audio.transport_recovery_completed'
   | 'audio.transport_recovery_failed'
   | 'audio.speech_pipeline_ready'
-  | 'audio.speech_pipeline_error';
+  | 'audio.speech_pipeline_error'
+  // Module 4 Speech Recognition Topics
+  | 'speech.recognition_initialized'
+  | 'speech.recognition_started'
+  | 'speech.recognition_ready'
+  | 'speech.recognition_paused'
+  | 'speech.recognition_resumed'
+  | 'speech.recognition_stopped'
+  | 'speech.recognition_error'
+  | 'speech.recognition_recovery_started'
+  | 'speech.recognition_recovery_completed'
+  | 'speech.recognition_recovery_failed'
+  | 'speech.provider_registered'
+  | 'speech.provider_unregistered'
+  | 'speech.provider_selected'
+  | 'speech.provider_failed'
+  | 'speech.provider_switched'
+  | 'speech.partial_result'
+  | 'speech.final_result'
+  | 'speech.transcript_updated'
+  | 'speech.segment_created'
+  | 'speech.segment_finalized'
+  | 'speech.transcript_quality_changed'
+  | 'speech.health_changed'
+  | 'speech.backpressure'
+  | 'speech.result_dropped'
+  | 'speech.sequence_gap';
 
 export type EventPriority = 'LOW' | 'NORMAL' | 'HIGH' | 'CRITICAL';
 

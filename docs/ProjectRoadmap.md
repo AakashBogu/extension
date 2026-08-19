@@ -16,7 +16,7 @@
 - [x] **Module 3B: Real-Time Tab Audio Capturer Engine** (TabAudioCaptureManager, TabAudioCaptureController, TabCaptureSessionManager, TabCaptureStreamManager, TabCapturePermissionManager, TabCaptureCapabilityManager, TabCaptureHealthMonitor, TabCaptureRecoveryManager, TabAudioCaptureHarness)
 - [x] **Module 3C: Real-Time Audio Processing & VAD Engine** (AudioProcessingEngine, AudioProcessor, PCMExtractor, ChannelMixer, AudioResampler, AudioFrameGenerator, AudioChunkManager, AudioSignalAnalyzer, VoiceActivityDetector, SpeechSegmentManager, AudioProcessingRegistry)
 - [x] **Module 3D: Audio Transport, Bounded Queue & Speech Pipeline Boundary** (AudioTransportEngine, AudioChunkQueue, AudioChunkTransport, AudioChunkSerializer, AudioTransportRouter, SpeechPipelineBoundary, SpeechPipelineAdapter, NullSpeechPipelineAdapter, AudioTransportHealthMonitor, AudioTransportRecoveryManager)
-- [ ] **Module 4: Speech Transcription Pipeline**
+- [x] **Module 4: Speech Transcription Pipeline** (SpeechRecognitionEngine, ISpeechRecognitionProvider, NullSpeechRecognitionProvider, SpeechProviderRegistry, SpeechProviderRouter, RecognitionSessionManager, PartialTranscriptManager, TranscriptSegmentRegistry, TranscriptAggregator, SpeechLanguageManager, ConfidenceNormalizer, SpeechRecognitionHealthMonitor, SpeechRecognitionRecoveryManager, FinalizedTranscript Module 5 Boundary)
 - [ ] **Module 5: Claim Detection Engine**
 - [ ] **Module 6: AI & Search Provider Abstraction Layer**
 - [ ] **Module 7: Verification Pipeline & Multi-Source Reranker**

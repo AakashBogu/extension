@@ -10,8 +10,15 @@
 
 ## Module 3 Audio Capture, Processing & Transport Suite (3A-3D)
 - **Date Completed**: 2026-08-19
+- **Deliverables**: Complete offscreen document audio runtime, tab capture session engine, 16kHz resampler & hybrid VAD processing engine, bounded audio transport queue & speech pipeline boundary.
+
+## Module 4 Speech Transcription Pipeline Suite
+- **Date Completed**: 2026-08-19
 - **Deliverables**:
-  - Module 3A: `OffscreenDocumentManager`, `AudioContextRuntime`, `OffscreenAudioRuntime` facade, `OffscreenBridge`, `OffscreenMessageRouter`, `OffscreenRecoveryManager`.
-  - Module 3B: `TabAudioCaptureManager`, `TabCaptureSessionManager`, `TabCaptureStreamManager`, `TabCapturePermissionManager`, `TabCaptureCapabilityManager`, `TabCaptureHealthMonitor`, `TabCaptureRecoveryManager`.
-  - Module 3C: `AudioProcessingEngine`, `AudioProcessor`, `PCMExtractor`, `ChannelMixer`, `AudioResampler`, `AudioFrameGenerator`, `AudioChunkManager`, `AudioSignalAnalyzer`, `VoiceActivityDetector`, `SpeechSegmentManager`, `AudioProcessingRegistry`.
-  - Module 3D: `AudioTransportEngine`, `AudioChunkQueue` (bounded FIFO queue with `DROP_OLDEST`), `AudioChunkTransport` (sequence validation & gap detection), `AudioChunkSerializer`, `AudioTransportRouter`, `SpeechPipelineBoundary`, `ISpeechPipelineAdapter` & `NullSpeechPipelineAdapter`, `AudioTransportHealthMonitor`, `AudioTransportRecoveryManager`, 22 new EventBus topics, and unit test suites passing 100%.
+  - `SpeechRecognitionEngine` top-level recognition pipeline orchestrator.
+  - `ISpeechRecognitionProvider` abstract provider interface & `NullSpeechRecognitionProvider` default testable implementation.
+  - `SpeechProviderRegistry` & `SpeechProviderRouter` with priority-based vendor fallback routing.
+  - `RecognitionSessionManager` session lifecycle manager.
+  - `PartialTranscriptManager`, `TranscriptSegmentRegistry`, `TranscriptDeduplicationManager`, `TranscriptTimestampNormalizer`, `TranscriptQualityManager`, and `TranscriptAggregator`.
+  - `FinalizedTranscript` object boundary feeding Module 5.
+  - 25 new EventBus topics and 14 new unit test files (Total 111 passing tests across 70 test suites).
