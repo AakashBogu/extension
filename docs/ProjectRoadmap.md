@@ -20,5 +20,6 @@
 - [x] **Module 5: Claim Detection Engine** (ClaimDetectionEngine, ClaimCandidateDetector, ClaimExtractor, ClaimNormalizer, SentenceSegmenter, ClaimClassifier, ClaimVerifiabilityClassifier, ClaimConfidenceScorer, ClaimPriorityEngine, ClaimEntityExtractor, IClaimAnalysisProvider, NullClaimAnalysisProvider, ClaimRegistry, ClaimDeduplicationManager, VerifiableClaim Module 6 Boundary)
 - [ ] **Module 6: AI & Search Provider Abstraction Layer**
   - [x] **Module 6A: Provider Contracts** (ISearchProvider, SearchRequest, SearchResponse, SearchResult, IAIProvider, AIRequest, AIResponse, AIOperationType, ProviderErrors)
+  - [x] **Module 6B: Provider Registries & Routing Layer** (AIProviderRegistry, SearchProviderRegistry, ProviderValidator, AIProviderRouter, SearchProviderRouter, ProviderHealthManager, ProviderRecoveryManager)
 - [ ] **Module 7: Verification Pipeline & Multi-Source Reranker**
 - [ ] **Module 8: Synchronized Overlay UI & DevTools**

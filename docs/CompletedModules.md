@@ -20,11 +20,8 @@
 - **Date Completed**: 2026-08-19
 - **Deliverables**: Complete real-time claim detection facade, sentence segmenter, claim candidate detectors, classifiers, normalizers, confidence/priority engines, deduplication manager, and `VerifiableClaim` boundary object.
 
-## Module 6A Provider Contracts Suite
+## Module 6 AI & Search Provider Abstraction Layer
 - **Date Completed**: 2026-08-19
 - **Deliverables**:
-  - `ISearchProvider` search provider interface & `SearchRequest`, `SearchResponse`, `SearchResult`, `SearchProviderCapabilities`.
-  - `IAIProvider` AI provider interface & `AIRequest`, `AIResponse`, `AIProviderCapabilities` with `AIOperationType` union.
-  - `ProviderTypes` shared provider status, metadata, priority, and health contracts.
-  - `ProviderErrors` hierarchy (`ProviderError`, `ProviderInitializationError`, `ProviderConfigurationError`, `ProviderCapabilityError`, `ProviderRequestError`, `ProviderResponseError`).
-  - Unit test suite `providercontracts.test.ts` (Total 132 passing tests across 89 test suites).
+  - Module 6A: `ISearchProvider`, `IAIProvider`, `SearchRequest`, `SearchResponse`, `AIRequest`, `AIResponse`, `ProviderTypes`, `ProviderErrors`.
+  - Module 6B: `AIProviderRegistry`, `SearchProviderRegistry`, `ProviderValidator`, `AIProviderRouter`, `SearchProviderRouter`, `ProviderHealthManager`, `ProviderRecoveryManager`, 13 new EventBus topics, and 7 unit test files (Total 143 passing tests across 96 test suites).

@@ -1,5 +1,5 @@
 /**
- * Event Types & Topic Definitions (Module 5 Specification)
+ * Event Types & Topic Definitions (Module 6B Specification)
  */
 export type EventTopic =
   | 'audio.captured'
@@ -168,7 +168,6 @@ export type EventTopic =
   | 'speech.backpressure'
   | 'speech.result_dropped'
   | 'speech.sequence_gap'
-  // Module 5 Claim Detection Topics
   | 'claim.detection_initialized'
   | 'claim.detection_ready'
   | 'claim.detection_started'
@@ -192,7 +191,21 @@ export type EventTopic =
   | 'claim.provider_switched'
   | 'claim.health_changed'
   | 'claim.backpressure'
-  | 'claim.processing_dropped';
+  | 'claim.processing_dropped'
+  // Module 6B Provider Management Topics
+  | 'provider.registered'
+  | 'provider.unregistered'
+  | 'provider.initialization_started'
+  | 'provider.initialization_completed'
+  | 'provider.initialization_failed'
+  | 'provider.health_changed'
+  | 'provider.recovery_started'
+  | 'provider.recovery_completed'
+  | 'provider.recovery_failed'
+  | 'provider.routing_selected'
+  | 'provider.routing_failed'
+  | 'provider.request_failed'
+  | 'provider.fallback_selected';
 
 export type EventPriority = 'LOW' | 'NORMAL' | 'HIGH' | 'CRITICAL';
 
