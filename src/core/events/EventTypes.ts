@@ -1,5 +1,5 @@
 /**
- * Event Types & Topic Definitions (Module 6D Specification)
+ * Event Types & Topic Definitions (Module 6E Specification)
  */
 export type EventTopic =
   | 'audio.captured'
@@ -205,7 +205,6 @@ export type EventTopic =
   | 'provider.routing_failed'
   | 'provider.request_failed'
   | 'provider.fallback_selected'
-  // Module 6D Execution Topics
   | 'provider.execution_initialized'
   | 'provider.request_created'
   | 'provider.request_queued'
@@ -220,7 +219,19 @@ export type EventTopic =
   | 'provider.execution_health_changed'
   | 'provider.execution_recovery_started'
   | 'provider.execution_recovery_completed'
-  | 'provider.execution_recovery_failed';
+  | 'provider.execution_recovery_failed'
+  // Module 6E Cache Topics
+  | 'provider.cache_initialized'
+  | 'provider.cache_hit'
+  | 'provider.cache_miss'
+  | 'provider.cache_inserted'
+  | 'provider.cache_evicted'
+  | 'provider.cache_expired'
+  | 'provider.cache_invalidated'
+  | 'provider.cache_cleared'
+  | 'provider.cache_deduplicated'
+  | 'provider.cache_error'
+  | 'provider.cache_health_changed';
 
 export type EventPriority = 'LOW' | 'NORMAL' | 'HIGH' | 'CRITICAL';
 

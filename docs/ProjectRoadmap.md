@@ -23,5 +23,6 @@
   - [x] **Module 6B: Provider Registries & Routing Layer** (AIProviderRegistry, SearchProviderRegistry, ProviderValidator, AIProviderRouter, SearchProviderRouter, ProviderHealthManager, ProviderRecoveryManager)
   - [x] **Module 6C: Concrete Provider Adapter Layer** (OpenAIProvider, GeminiProvider, BraveSearchProvider, BingSearchProvider, HttpClient, ProviderCredentialManager, ProviderBootstrap)
   - [x] **Module 6D: Provider Execution & Request Orchestration** (ProviderExecutionEngine, RequestLifecycleManager, ProviderExecutionPolicy, ProviderRetryManager, ProviderRequestCancellationManager, ProviderResponseNormalizer, ProviderExecutionMetricsCollector, ProviderExecutionHealthMonitor, ProviderExecutionRecoveryManager)
+  - [x] **Module 6E: Provider Response Caching & In-Flight Request Deduplication** (ProviderResponseCache, ProviderCacheKeyGenerator, ProviderCachePolicy, ProviderCacheEvictionManager, ProviderInFlightDeduplicator, ProviderCacheMetricsCollector, ProviderCacheHealthMonitor, ProviderCacheInvalidationManager)
 - [ ] **Module 7: Verification Pipeline & Multi-Source Reranker**
 - [ ] **Module 8: Synchronized Overlay UI & DevTools**

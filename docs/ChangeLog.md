@@ -1,17 +1,16 @@
 # System Changelog
 
-## [6.4.0-module6d] - 2026-08-19
+## [6.5.0-module6e] - 2026-08-19
 ### Added
-- `ProviderExecutionEngine` top-level execution facade.
-- `RequestLifecycleManager` tracking request state transitions (`CREATED`, `QUEUED`, `ROUTING`, `EXECUTING`, `RETRYING`, `FALLBACK`, `COMPLETED`, `FAILED`, `CANCELLED`, `TIMED_OUT`).
-- `ProviderExecutionPolicy` centralizing execution limits, timeouts, retries, fallbacks, and concurrency.
-- `ProviderRetryManager` managing exponential backoff retries.
-- `ProviderRequestCancellationManager` handling AbortController cancellation.
-- `ProviderResponseNormalizer` normalizing raw provider responses into `AIResponse` / `SearchResponse`.
-- `ProviderExecutionMetricsCollector` collecting performance metrics.
-- `ProviderExecutionHealthMonitor` monitoring execution health.
-- `ProviderExecutionRecoveryManager` resetting subsystem states.
-- 15 new EventBus topics (`provider.execution_initialized`, `provider.request_created`, `provider.request_queued`, `provider.request_routing`, `provider.request_started`, `provider.request_retrying`, `provider.request_fallback`, `provider.request_completed`, `provider.request_failed`, `provider.request_cancelled`, `provider.request_timeout`, `provider.execution_health_changed`, `provider.execution_recovery_started`, `provider.execution_recovery_completed`, `provider.execution_recovery_failed`).
-- Custom errors (`ProviderExecutionError`, `ProviderRequestValidationError`, `ProviderRequestTimeoutError`, `ProviderRequestCancelledError`, `ProviderRetryExhaustedError`, `ProviderFallbackExhaustedError`, `ProviderExecutionStateError`, `ProviderConcurrencyError`, `ProviderResponseNormalizationError`, `ProviderExecutionRecoveryError`).
-- 10 new unit test files across `src/test/providerexecution.test.ts`, `src/test/requestlifecycle.test.ts`, `src/test/providerretry.test.ts`, `src/test/providercancellation.test.ts`, `src/test/providerfallback.test.ts`, `src/test/providerresponse.test.ts`, `src/test/providerexecutionhealth.test.ts`, `src/test/providerexecutionrecovery.test.ts`, `src/test/providerexecutionmetrics.test.ts`, and `src/test/providerconcurrency.test.ts` (Total 166 passing tests across 114 test suites).
-- Technical documentation in `docs/modules/provider-execution/`.
+- `ProviderResponseCache` in-memory caching storage with TTL expiration.
+- `ProviderCacheKeyGenerator` generating deterministic request fingerprints.
+- `ProviderCachePolicy` managing TTLs, entry bounds, and memory limits.
+- `ProviderCacheEvictionManager` implementing LRU eviction based on access sequence.
+- `ProviderInFlightDeduplicator` coalescing concurrent in-flight requests into single promises.
+- `ProviderCacheMetricsCollector` tracking hits, misses, evictions, deduplications, and hit rates.
+- `ProviderCacheHealthMonitor` monitoring memory pressure and cache status.
+- `ProviderCacheInvalidationManager` managing targeted cache invalidation.
+- 11 new EventBus topics (`provider.cache_initialized`, `provider.cache_hit`, `provider.cache_miss`, `provider.cache_inserted`, `provider.cache_evicted`, `provider.cache_expired`, `provider.cache_invalidated`, `provider.cache_cleared`, `provider.cache_deduplicated`, `provider.cache_error`, `provider.cache_health_changed`).
+- Custom errors (`ProviderCacheError`, `ProviderCacheKeyError`, `ProviderCacheCapacityError`, `ProviderCacheSerializationError`, `ProviderCacheInvalidationError`, `ProviderCacheInternalError`).
+- 7 new unit test files across `src/test/providerresponsecache.test.ts`, `src/test/providercachekey.test.ts`, `src/test/providercacheeviction.test.ts`, `src/test/providerinflightdeduplication.test.ts`, `src/test/providercachemetrics.test.ts`, `src/test/providercachehealth.test.ts`, and `src/test/providercacheexecutionintegration.test.ts` (Total 174 passing tests across 121 test suites).
+- Technical documentation in `docs/modules/provider-cache/`.
