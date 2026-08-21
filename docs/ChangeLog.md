@@ -1,12 +1,13 @@
 # System Changelog
 
-## [6.6.5-module6f5] - 2026-08-20
+## [6.6.6-module6f6] - 2026-08-21
 ### Added
-- `ProviderCooldownManager` top-level cooldown facade integrated into `ProviderExecutionEngine`, `ProviderAdmissionController`, and routers.
-- `ProviderCooldownEvaluator` calculating exponential backoff and Retry-After normalization.
-- `ProviderCooldownPolicy` configuring base/max durations, backoff factor, and failure trigger flags.
-- `ProviderCooldownRecoveryManager` handling cooldown timers and recovery scheduling.
-- `ExtendedProviderCooldownState` data contract.
-- 7 new EventBus topics (`provider.cooldown_started`, `provider.cooldown_extended`, `provider.cooldown_expired`, `provider.cooldown_recovery_started`, `provider.cooldown_recovery_succeeded`, `provider.cooldown_recovery_failed`, `provider.cooldown_cleared`).
-- 8 new unit test files (`providercooldownmanager.test.ts`, `providercooldownevaluator.test.ts`, `providercooldownpolicy.test.ts`, `providercooldownrecovery.test.ts`, `providercooldownbackoff.test.ts`, `providercooldownretryafter.test.ts`, `providercooldownadmission.test.ts`, `providercooldownexecution.test.ts`).
-- Documentation suite in `docs/modules/provider-cooldown/`.
+- `ProviderQuotaManager` top-level quota facade integrated into `ProviderExecutionEngine`, `ProviderAdmissionController`, and routers.
+- `ProviderQuotaEvaluator` calculating quota utilization ratios and window reset timestamps.
+- `ProviderQuotaSnapshotBuilder` constructing normalized `ProviderQuotaState` snapshots.
+- `ProviderQuotaReservationManager` managing thread-safe in-flight request reservations.
+- `ProviderQuotaRoutingPolicy` configuring candidate exclusion for routers.
+- `ProviderQuotaErrors` custom error hierarchy.
+- 8 new EventBus topics (`provider.quota_updated`, `provider.quota_warning`, `provider.quota_critical`, `provider.quota_exhausted`, `provider.quota_reset`, `provider.quota_reservation_created`, `provider.quota_reservation_released`, `provider.quota_reservation_committed`).
+- 8 new unit test files (`providerquotamanager.test.ts`, `providerquotaevaluator.test.ts`, `providerquotasnapshot.test.ts`, `providerquotarouting.test.ts`, `providerquotareservation.test.ts`, `providerquotaintegration.test.ts`, `providerquotaexhaustion.test.ts`, `providerquotarecovery.test.ts`).
+- Documentation suite in `docs/modules/provider-quota/`.

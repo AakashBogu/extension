@@ -245,14 +245,22 @@ export type EventTopic =
   | 'provider.admission_cooldown'
   | 'provider.admission_capacity_exceeded'
   | 'provider.admission_disabled'
-  // Module 6F.5 Cooldown Topics
   | 'provider.cooldown_started'
   | 'provider.cooldown_extended'
   | 'provider.cooldown_expired'
   | 'provider.cooldown_recovery_started'
   | 'provider.cooldown_recovery_succeeded'
   | 'provider.cooldown_recovery_failed'
-  | 'provider.cooldown_cleared';
+  | 'provider.cooldown_cleared'
+  // Module 6F.6 Quota Topics
+  | 'provider.quota_updated'
+  | 'provider.quota_warning'
+  | 'provider.quota_critical'
+  | 'provider.quota_exhausted'
+  | 'provider.quota_reset'
+  | 'provider.quota_reservation_created'
+  | 'provider.quota_reservation_released'
+  | 'provider.quota_reservation_committed';
 
 export type EventPriority = 'LOW' | 'NORMAL' | 'HIGH' | 'CRITICAL';
 

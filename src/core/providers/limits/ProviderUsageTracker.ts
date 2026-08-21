@@ -113,6 +113,7 @@ export class ProviderUsageTracker {
 
   resetProvider(providerId: string): void {
     this.collector.resetEntity(providerId);
+    this.bucketManager.resetEntity(providerId);
     if (this.eventBus) {
       this.eventBus.publish('provider.usage_reset', { providerId, timestamp: Date.now() });
     }

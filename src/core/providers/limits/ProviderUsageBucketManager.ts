@@ -64,6 +64,16 @@ export class ProviderUsageBucketManager {
     if (typeof record.estimatedCost === 'number') m.estimatedCost += record.estimatedCost;
   }
 
+  resetEntity(entityKey: string): void {
+    const keysToDelete: string[] = [];
+    this.buckets.forEach((_, key) => {
+      if (key.startsWith(`${entityKey}:`)) {
+        keysToDelete.push(key);
+      }
+    });
+    keysToDelete.forEach(k => this.buckets.delete(k));
+  }
+
   clear(): void {
     this.buckets.clear();
   }

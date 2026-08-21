@@ -22,6 +22,7 @@ import { ProviderUsageTracker } from '../limits/ProviderUsageTracker';
 import { ProviderRateLimitStateTracker } from '../limits/ProviderRateLimitStateTracker';
 import { ProviderAdmissionController } from '../limits/ProviderAdmissionController';
 import { ProviderCooldownManager } from '../limits/ProviderCooldownManager';
+import { ProviderQuotaManager } from '../limits/ProviderQuotaManager';
 import { ProviderAdmissionError } from '../../error/ProviderLimitErrors';
 import { IEventBus } from '../../events/IEventBus';
 
@@ -40,6 +41,7 @@ export class ProviderExecutionEngine {
   public readonly usageTracker: ProviderUsageTracker;
   public readonly rateLimitTracker: ProviderRateLimitStateTracker;
   public readonly cooldownManager: ProviderCooldownManager;
+  public readonly quotaManager: ProviderQuotaManager;
   public readonly admissionController: ProviderAdmissionController;
 
   constructor(
@@ -54,6 +56,7 @@ export class ProviderExecutionEngine {
     rateLimitTracker?: ProviderRateLimitStateTracker,
     admissionController?: ProviderAdmissionController,
     cooldownManager?: ProviderCooldownManager,
+    quotaManager?: ProviderQuotaManager,
     private eventBus?: IEventBus
   ) {
     this.policy = policyConfig instanceof ProviderExecutionPolicy ? policyConfig : new ProviderExecutionPolicy(policyConfig);
@@ -68,12 +71,14 @@ export class ProviderExecutionEngine {
     this.usageTracker = usageTracker || new ProviderUsageTracker(eventBus);
     this.rateLimitTracker = rateLimitTracker || new ProviderRateLimitStateTracker(this.usageTracker, eventBus);
     this.cooldownManager = cooldownManager || new ProviderCooldownManager(undefined, eventBus);
-    this.admissionController = admissionController || new ProviderAdmissionController(this.rateLimitTracker, this.usageTracker, undefined, this.cooldownManager, eventBus);
+    this.quotaManager = quotaManager || new ProviderQuotaManager(this.usageTracker, eventBus);
+    this.admissionController = admissionController || new ProviderAdmissionController(this.rateLimitTracker, this.usageTracker, undefined, this.cooldownManager, this.quotaManager, eventBus);
   }
 
   async initialize(): Promise<void> {
     this.status = 'INITIALIZING';
     await this.cooldownManager.initialize();
+    await this.quotaManager.initialize();
     await this.admissionController.initialize();
     if (this.eventBus) {
       this.eventBus.publish('provider.execution_initialized', { timestamp: Date.now() });
@@ -117,6 +122,7 @@ export class ProviderExecutionEngine {
         attemptCount++;
 
         let provider;
+        let reservation;
         try {
           this.lifecycleManager.transitionTo(request.requestId, 'ROUTING');
           provider = this.aiRouter.selectProvider(request);
@@ -141,6 +147,9 @@ export class ProviderExecutionEngine {
             });
           }
 
+          // 4. Reserve Quota
+          reservation = this.quotaManager.reserve(provider.id, 1, 0, 0);
+
           this.usageTracker.recordRequestStart(provider.id, request.requestId);
           this.lifecycleManager.transitionTo(request.requestId, 'EXECUTING', { providerId: provider.id });
           const response = await provider.analyze({ ...request, timeoutMs });
@@ -151,9 +160,7 @@ export class ProviderExecutionEngine {
           this.cancellationManager.removeController(request.requestId);
           executionActive = false;
 
-          // Record Success in Cache, Usage Tracker, and Cooldown Manager
-          this.responseCache.set(cacheKey, 'AI', normalized, undefined, normalized.providerId);
-          this.usageTracker.recordRequestSuccess({
+          const usageRecord = {
             recordId: `rec_${Date.now()}_${request.requestId}`,
             providerId: provider.id,
             requestId: request.requestId,
@@ -165,12 +172,20 @@ export class ProviderExecutionEngine {
             durationMs: Date.now() - startTime,
             timestamp: Date.now(),
             cacheHit: false
-          }, normalized.modelName);
+          };
 
+          // Record Success in Cache, Usage Tracker, Quota Commit, and Cooldown Manager
+          this.responseCache.set(cacheKey, 'AI', normalized, undefined, normalized.providerId);
+          this.usageTracker.recordRequestSuccess(usageRecord, normalized.modelName);
+          reservation.commit(usageRecord);
           this.cooldownManager.recordSuccess(provider.id, normalized.modelName);
 
           return normalized;
         } catch (err: unknown) {
+          if (reservation) {
+            reservation.release();
+          }
+
           if (err instanceof ProviderAdmissionError) {
             this.lifecycleManager.transitionTo(request.requestId, 'FAILED', { error: err.message });
             this.metricsCollector.recordFailure();
@@ -263,6 +278,7 @@ export class ProviderExecutionEngine {
         attemptCount++;
 
         let provider;
+        let reservation;
         try {
           this.lifecycleManager.transitionTo(request.requestId, 'ROUTING');
           provider = this.searchRouter.selectProvider(request);
@@ -287,6 +303,9 @@ export class ProviderExecutionEngine {
             });
           }
 
+          // 4. Reserve Quota
+          reservation = this.quotaManager.reserve(provider.id, 1, 0, 0);
+
           this.usageTracker.recordRequestStart(provider.id, request.requestId);
           this.lifecycleManager.transitionTo(request.requestId, 'EXECUTING', { providerId: provider.id });
           const response = await provider.search({ ...request, timeoutMs });
@@ -297,9 +316,7 @@ export class ProviderExecutionEngine {
           this.cancellationManager.removeController(request.requestId);
           executionActive = false;
 
-          // Record Success in Cache, Usage Tracker, and Cooldown Manager
-          this.responseCache.set(cacheKey, 'SEARCH', normalized, undefined, normalized.providerId);
-          this.usageTracker.recordRequestSuccess({
+          const usageRecord = {
             recordId: `rec_${Date.now()}_${request.requestId}`,
             providerId: provider.id,
             requestId: request.requestId,
@@ -307,12 +324,20 @@ export class ProviderExecutionEngine {
             durationMs: Date.now() - startTime,
             timestamp: Date.now(),
             cacheHit: false
-          });
+          };
 
+          // Record Success in Cache, Usage Tracker, Quota Commit, and Cooldown Manager
+          this.responseCache.set(cacheKey, 'SEARCH', normalized, undefined, normalized.providerId);
+          this.usageTracker.recordRequestSuccess(usageRecord);
+          reservation.commit(usageRecord);
           this.cooldownManager.recordSuccess(provider.id);
 
           return normalized;
         } catch (err: unknown) {
+          if (reservation) {
+            reservation.release();
+          }
+
           if (err instanceof ProviderAdmissionError) {
             this.lifecycleManager.transitionTo(request.requestId, 'FAILED', { error: err.message });
             this.metricsCollector.recordFailure();
@@ -411,6 +436,7 @@ export class ProviderExecutionEngine {
     this.usageTracker.resetAll();
     this.admissionController.reset();
     this.cooldownManager.reset();
+    this.quotaManager.reset();
     this.status = 'STOPPED';
   }
 
@@ -423,6 +449,7 @@ export class ProviderExecutionEngine {
     this.usageTracker.resetAll();
     this.admissionController.destroy();
     this.cooldownManager.destroy();
+    this.quotaManager.destroy();
     this.status = 'DESTROYED';
   }
 

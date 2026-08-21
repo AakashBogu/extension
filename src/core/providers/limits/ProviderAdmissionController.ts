@@ -7,6 +7,7 @@ import { ProviderUsageTracker } from './ProviderUsageTracker';
 import { ProviderQuotaPolicy } from './ProviderQuotaPolicy';
 import { ProviderCooldownState } from './ProviderCooldownTypes';
 import { ProviderCooldownManager } from './ProviderCooldownManager';
+import { ProviderQuotaManager } from './ProviderQuotaManager';
 import { AIRequest } from '../ai/AIProviderTypes';
 import { SearchRequest } from '../search/SearchProviderTypes';
 import { IEventBus } from '../../events/IEventBus';
@@ -37,6 +38,7 @@ export class ProviderAdmissionController {
     private usageTracker: ProviderUsageTracker,
     policyConfig?: ProviderAdmissionPolicy,
     private cooldownManager?: ProviderCooldownManager,
+    private quotaManager?: ProviderQuotaManager,
     private eventBus?: IEventBus
   ) {
     if (policyConfig) this.policy = policyConfig;
@@ -52,6 +54,9 @@ export class ProviderAdmissionController {
 
   setProviderQuotaPolicy(providerId: string, policy: ProviderQuotaPolicy): void {
     this.providerQuotaMap.set(providerId, policy);
+    if (this.quotaManager) {
+      this.quotaManager.configureQuotaPolicy(providerId, policy);
+    }
   }
 
   setProviderCooldown(providerId: string, cooldown: ProviderCooldownState): void {
@@ -76,6 +81,8 @@ export class ProviderAdmissionController {
       enabledState,
       activeConcurrentCount,
       maxConcurrentAllowed,
+      this.quotaManager,
+      request,
       Date.now()
     );
 

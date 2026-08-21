@@ -20,10 +20,10 @@
 - **Date Completed**: 2026-08-19
 - **Deliverables**: Complete real-time claim detection facade, sentence segmenter, claim candidate detectors, classifiers, normalizers, confidence/priority engines, deduplication manager, and `VerifiableClaim` boundary object.
 
-## Module 6 AI & Search Provider Abstraction Layer Suite (6A-6F.5)
-- **Date Completed**: 2026-08-20
+## Module 6 AI & Search Provider Abstraction Layer Suite (6A-6F.6)
+- **Date Completed**: 2026-08-21
 - **Deliverables**:
-  - Module 6A: `ISearchProvider`, `IAIProvider`, `SearchRequest`, `SearchResponse`, `AIRequest`, `AIResponse`, `ProviderTypes`, `ProviderErrors`.
+  - Module 6A: `ISearchProvider`, `IAIProvider`, `SearchRequest`, `SearchResponse`, `SearchResult`, `AIRequest`, `AIResponse`, `AIOperationType`, `ProviderErrors`.
   - Module 6B: `AIProviderRegistry`, `SearchProviderRegistry`, `ProviderValidator`, `AIProviderRouter`, `SearchProviderRouter`, `ProviderHealthManager`, `ProviderRecoveryManager`.
   - Module 6C: `OpenAIProvider` (`ai.openai`), `GeminiProvider` (`ai.gemini`), `BraveSearchProvider` (`search.brave`), `BingSearchProvider` (`search.bing`), `HttpClient`, `ProviderCredentialManager`, `ProviderBootstrap`.
   - Module 6D: `ProviderExecutionEngine`, `RequestLifecycleManager`, `ProviderExecutionPolicy`, `ProviderRetryManager`, `ProviderRequestCancellationManager`, `ProviderResponseNormalizer`, `ProviderExecutionMetricsCollector`, `ProviderExecutionHealthMonitor`, `ProviderExecutionRecoveryManager`.
@@ -32,4 +32,5 @@
   - Module 6F.2: `ProviderUsageTracker`, usage snapshot builder, time bucket manager, usage metrics collector.
   - Module 6F.3: `ProviderRateLimitStateTracker`, rate-limit evaluator, window manager.
   - Module 6F.4: `ProviderAdmissionController`, `ProviderAdmissionEvaluator`, `ProviderAdmissionDecisionBuilder`, `ProviderAdmissionPolicy`, `ProviderAdmissionState`.
-  - Module 6F.5: `ProviderCooldownManager`, `ProviderCooldownEvaluator`, `ProviderCooldownPolicy`, `ProviderCooldownState`, `ProviderCooldownRecoveryManager`, 7 event topics, 8 new test files (Total 202 passing unit tests across 139 test suites).
+  - Module 6F.5: `ProviderCooldownManager`, `ProviderCooldownEvaluator`, `ProviderCooldownPolicy`, `ProviderCooldownState`, `ProviderCooldownRecoveryManager`.
+  - Module 6F.6: `ProviderQuotaManager`, `ProviderQuotaEvaluator`, `ProviderQuotaSnapshotBuilder`, `ProviderQuotaReservationManager`, `ProviderQuotaRoutingPolicy`, `ProviderQuotaErrors`, 8 event topics, 8 new test files (Total 210 passing unit tests across 147 test suites).

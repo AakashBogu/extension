@@ -5,6 +5,9 @@ import { ProviderUsageTracker } from './ProviderUsageTracker';
 import { ProviderQuotaPolicy } from './ProviderQuotaPolicy';
 import { ProviderCooldownState } from './ProviderCooldownTypes';
 import { ExtendedRateLimitState } from './ProviderRateLimitStateTypes';
+import { ProviderQuotaManager } from './ProviderQuotaManager';
+import { AIRequest } from '../ai/AIProviderTypes';
+import { SearchRequest } from '../search/SearchProviderTypes';
 
 export class ProviderAdmissionEvaluator {
   static evaluate(
@@ -17,6 +20,8 @@ export class ProviderAdmissionEvaluator {
     enabledState: boolean = true,
     activeConcurrentCount: number = 0,
     maxConcurrentAllowed: number = 10,
+    quotaManager?: ProviderQuotaManager,
+    request?: AIRequest | SearchRequest,
     now: number = Date.now()
   ): AdmissionResult {
     // 1. DISABLED check
@@ -42,27 +47,41 @@ export class ProviderAdmissionEvaluator {
     }
 
     // 3. QUOTA_EXHAUSTED check
-    if (policy.enforceQuota && quotaPolicy && quotaPolicy.enabled) {
-      const daySnapshot = usageTracker.getBucketSnapshot(providerId, 'DAY');
-      if (daySnapshot && quotaPolicy.dailyLimits) {
-        const m = daySnapshot.metrics;
-        if (quotaPolicy.dailyLimits.requests && m.successfulRequests + m.failedRequests >= quotaPolicy.dailyLimits.requests) {
+    if (policy.enforceQuota) {
+      if (quotaManager && request) {
+        const quotaDecision = quotaManager.evaluate(providerId, request);
+        if (quotaDecision.decision === 'QUOTA_EXHAUSTED') {
           return {
             providerId,
             decision: 'QUOTA_EXHAUSTED',
-            reason: `Daily request quota exhausted for provider [${providerId}]`,
+            reason: quotaDecision.reason,
             checkedAt: now,
+            retryAt: quotaDecision.resetTimestamp,
             remainingCapacity: 0
           };
         }
-        if (quotaPolicy.dailyLimits.tokens && m.totalTokens >= quotaPolicy.dailyLimits.tokens) {
-          return {
-            providerId,
-            decision: 'QUOTA_EXHAUSTED',
-            reason: `Daily token quota exhausted for provider [${providerId}]`,
-            checkedAt: now,
-            remainingCapacity: 0
-          };
+      } else if (quotaPolicy && quotaPolicy.enabled) {
+        const daySnapshot = usageTracker.getBucketSnapshot(providerId, 'DAY');
+        if (daySnapshot && quotaPolicy.dailyLimits) {
+          const m = daySnapshot.metrics;
+          if (quotaPolicy.dailyLimits.requests && m.successfulRequests + m.failedRequests >= quotaPolicy.dailyLimits.requests) {
+            return {
+              providerId,
+              decision: 'QUOTA_EXHAUSTED',
+              reason: `Daily request quota exhausted for provider [${providerId}]`,
+              checkedAt: now,
+              remainingCapacity: 0
+            };
+          }
+          if (quotaPolicy.dailyLimits.tokens && m.totalTokens >= quotaPolicy.dailyLimits.tokens) {
+            return {
+              providerId,
+              decision: 'QUOTA_EXHAUSTED',
+              reason: `Daily token quota exhausted for provider [${providerId}]`,
+              checkedAt: now,
+              remainingCapacity: 0
+            };
+          }
         }
       }
     }

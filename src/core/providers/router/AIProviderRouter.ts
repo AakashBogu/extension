@@ -4,15 +4,24 @@ import { IAIProvider } from '../ai/IAIProvider';
 import { AIRequest, AIResponse } from '../ai/AIProviderTypes';
 import { ProviderCapabilityError, ProviderRequestError } from '../../error/ProviderErrors';
 import { ProviderCooldownManager } from '../limits/ProviderCooldownManager';
+import { ProviderQuotaManager } from '../limits/ProviderQuotaManager';
+import { ProviderQuotaRoutingPolicy } from '../limits/ProviderQuotaRoutingPolicy';
+import { ProviderQuotaRoutingError } from '../../error/ProviderQuotaErrors';
 import { IEventBus } from '../../events/IEventBus';
 
 export class AIProviderRouter {
+  public quotaRoutingPolicy: ProviderQuotaRoutingPolicy;
+
   constructor(
     private registry: AIProviderRegistry,
     private healthManager: ProviderHealthManager,
     private cooldownManager?: ProviderCooldownManager,
+    private quotaManager?: ProviderQuotaManager,
+    quotaRoutingPolicy?: ProviderQuotaRoutingPolicy,
     private eventBus?: IEventBus
-  ) {}
+  ) {
+    this.quotaRoutingPolicy = quotaRoutingPolicy || new ProviderQuotaRoutingPolicy();
+  }
 
   selectProvider(request: AIRequest): IAIProvider {
     const enabledProviders = this.registry.getEnabled();
@@ -28,11 +37,22 @@ export class AIProviderRouter {
       throw new ProviderCapabilityError(`No AI provider supports operation [${request.operation}]`, { requestId: request.requestId, correlationId: request.correlationId });
     }
 
-    // Filter out providers in active cooldown if cooldownManager is provided
+    // Filter out providers in active cooldown
     if (this.cooldownManager) {
       const activeCapable = capable.filter(p => !this.cooldownManager!.isInCooldown(p.id));
       if (activeCapable.length > 0) {
         capable = activeCapable;
+      }
+    }
+
+    // Filter out quota exhausted providers
+    if (this.quotaManager && this.quotaRoutingPolicy.excludeExhausted) {
+      const nonExhausted = capable.filter(p => !this.quotaManager!.isExhausted(p.id));
+      if (nonExhausted.length > 0) {
+        capable = nonExhausted;
+      } else {
+        if (this.eventBus) this.eventBus.publish('provider.routing_failed', { operation: request.operation, reason: 'All candidate AI providers are quota exhausted', timestamp: Date.now() });
+        throw new ProviderQuotaRoutingError('All candidate AI providers have exhausted their quota', { requestId: request.requestId, correlationId: request.correlationId });
       }
     }
 
@@ -82,6 +102,7 @@ export class AIProviderRouter {
     for (const provider of sorted) {
       if (this.healthManager.getHealth(provider.id) === 'UNHEALTHY') continue;
       if (this.cooldownManager && this.cooldownManager.isInCooldown(provider.id)) continue;
+      if (this.quotaManager && this.quotaRoutingPolicy.excludeExhausted && this.quotaManager.isExhausted(provider.id)) continue;
 
       const startTime = Date.now();
       try {
