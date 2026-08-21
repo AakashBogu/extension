@@ -20,7 +20,7 @@
 - **Date Completed**: 2026-08-19
 - **Deliverables**: Complete real-time claim detection facade, sentence segmenter, claim candidate detectors, classifiers, normalizers, confidence/priority engines, deduplication manager, and `VerifiableClaim` boundary object.
 
-## Module 6 AI & Search Provider Abstraction Layer Suite (6A-6F.7)
+## Module 6 AI & Search Provider Abstraction Layer Suite (6A-6F.8)
 - **Date Completed**: 2026-08-22
 - **Deliverables**:
   - Module 6A: `ISearchProvider`, `IAIProvider`, `SearchRequest`, `SearchResponse`, `SearchResult`, `AIRequest`, `AIResponse`, `AIOperationType`, `ProviderErrors`.
@@ -34,4 +34,5 @@
   - Module 6F.4: `ProviderAdmissionController`, `ProviderAdmissionEvaluator`, `ProviderAdmissionDecisionBuilder`, `ProviderAdmissionPolicy`, `ProviderAdmissionState`.
   - Module 6F.5: `ProviderCooldownManager`, `ProviderCooldownEvaluator`, `ProviderCooldownPolicy`, `ProviderCooldownState`, `ProviderCooldownRecoveryManager`.
   - Module 6F.6: `ProviderQuotaManager`, `ProviderQuotaEvaluator`, `ProviderQuotaSnapshotBuilder`, `ProviderQuotaReservationManager`, `ProviderQuotaRoutingPolicy`, `ProviderQuotaErrors`.
-  - Module 6F.7: `ProviderHealthManager` (Enhanced), `ProviderReliabilityTracker`, `ProviderLatencyTracker`, `ProviderHealthEvaluator`, `ProviderHealthScoringPolicy`, `ProviderHealthSnapshotBuilder`, 5 event topics, 10 new test files (Total 220 passing unit tests across 157 test suites).
+  - Module 6F.7: `ProviderHealthManager` (Enhanced), `ProviderReliabilityTracker`, `ProviderLatencyTracker`, `ProviderHealthEvaluator`, `ProviderHealthScoringPolicy`, `ProviderHealthSnapshotBuilder`.
+  - Module 6F.8: `ProviderRoutingOptimizer`, `ProviderAdaptiveRoutingPolicy`, `ProviderRoutingOutcomeTracker`, `ProviderRoutingWeights`, `ProviderRoutingDecision`, 5 event topics, 12 new test files (Total 232 passing unit tests across 169 test suites).

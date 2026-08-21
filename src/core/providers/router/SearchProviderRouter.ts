@@ -7,10 +7,14 @@ import { ProviderCooldownManager } from '../limits/ProviderCooldownManager';
 import { ProviderQuotaManager } from '../limits/ProviderQuotaManager';
 import { ProviderQuotaRoutingPolicy } from '../limits/ProviderQuotaRoutingPolicy';
 import { ProviderQuotaRoutingError } from '../../error/ProviderQuotaErrors';
+import { ProviderRoutingOptimizer } from './ProviderRoutingOptimizer';
+import { ProviderAdaptiveRoutingPolicy } from './ProviderAdaptiveRoutingPolicy';
 import { IEventBus } from '../../events/IEventBus';
 
 export class SearchProviderRouter {
   public quotaRoutingPolicy: ProviderQuotaRoutingPolicy;
+  public optimizer: ProviderRoutingOptimizer;
+  public adaptivePolicy: ProviderAdaptiveRoutingPolicy;
 
   constructor(
     private registry: SearchProviderRegistry,
@@ -18,9 +22,13 @@ export class SearchProviderRouter {
     private cooldownManager?: ProviderCooldownManager,
     private quotaManager?: ProviderQuotaManager,
     quotaRoutingPolicy?: ProviderQuotaRoutingPolicy,
+    optimizer?: ProviderRoutingOptimizer,
+    adaptivePolicy?: ProviderAdaptiveRoutingPolicy,
     private eventBus?: IEventBus
   ) {
     this.quotaRoutingPolicy = quotaRoutingPolicy || new ProviderQuotaRoutingPolicy();
+    this.optimizer = optimizer || new ProviderRoutingOptimizer(undefined, eventBus);
+    this.adaptivePolicy = adaptivePolicy || new ProviderAdaptiveRoutingPolicy({ requestType: 'SEARCH' });
   }
 
   selectProvider(request: SearchRequest, requiredCapabilities: SearchCapabilityFlag[] = []): ISearchProvider {
@@ -49,9 +57,12 @@ export class SearchProviderRouter {
       }
     }
 
-    // Rank candidates using HealthManager scoring
+    // Rank candidates using 6F.7 HealthManager scoring
     const ranked = this.healthManager.rankProviders(capable, this.cooldownManager, this.quotaManager);
-    const eligible = ranked.filter(r => r.score.isEligible);
+
+    // Apply 6F.8 Adaptive Routing Optimization
+    const optimized = this.optimizer.optimizeCandidates(ranked, 'SEARCH', this.adaptivePolicy);
+    const eligible = optimized.filter(entry => entry.decision.finalScore > 0);
 
     if (eligible.length === 0) {
       const topChoice = ranked[0].provider;
@@ -60,6 +71,7 @@ export class SearchProviderRouter {
     }
 
     const selected = eligible[0].provider;
+    this.optimizer.outcomeTracker.recordSelection(selected.id, 'SEARCH');
 
     if (this.eventBus) {
       this.eventBus.publish('provider.routing_selected', { providerId: selected.id, requestId: request.requestId, timestamp: Date.now() });
@@ -74,21 +86,26 @@ export class SearchProviderRouter {
     );
 
     const ranked = this.healthManager.rankProviders(capable, this.cooldownManager, this.quotaManager);
+    const optimized = this.optimizer.optimizeCandidates(ranked, 'SEARCH', this.adaptivePolicy);
 
     let lastError: Error | null = null;
 
-    for (const entry of ranked) {
-      if (!entry.score.isEligible) continue;
+    for (const entry of optimized) {
+      if (entry.decision.finalScore <= 0) continue;
       const provider = entry.provider;
       const startTime = Date.now();
 
       try {
         const response = await provider.search(request);
-        this.healthManager.recordSuccess(provider.id, Date.now() - startTime);
+        const latencyMs = Date.now() - startTime;
+        this.healthManager.recordSuccess(provider.id, latencyMs);
+        this.optimizer.outcomeTracker.recordOutcome(provider.id, 'SEARCH', true, latencyMs);
         return response;
       } catch (err) {
         lastError = err instanceof Error ? err : new Error(String(err));
+        const latencyMs = Date.now() - startTime;
         this.healthManager.recordFailure(provider.id, lastError.message);
+        this.optimizer.outcomeTracker.recordOutcome(provider.id, 'SEARCH', false, latencyMs);
 
         if (this.eventBus) {
           this.eventBus.publish('provider.request_failed', { providerId: provider.id, requestId: request.requestId, error: lastError.message, timestamp: Date.now() });

@@ -154,9 +154,10 @@ export class ProviderExecutionEngine {
           this.lifecycleManager.transitionTo(request.requestId, 'EXECUTING', { providerId: provider.id });
           const response = await provider.analyze({ ...request, timeoutMs });
           const normalized = ProviderResponseNormalizer.normalizeAIResponse(response);
+          const durationMs = Date.now() - startTime;
 
           this.lifecycleManager.transitionTo(request.requestId, 'COMPLETED');
-          this.metricsCollector.recordSuccess(Date.now() - startTime);
+          this.metricsCollector.recordSuccess(durationMs);
           this.cancellationManager.removeController(request.requestId);
           executionActive = false;
 
@@ -169,22 +170,25 @@ export class ProviderExecutionEngine {
             inputTokens: normalized.tokenUsage?.promptTokens,
             outputTokens: normalized.tokenUsage?.completionTokens,
             totalTokens: normalized.tokenUsage?.totalTokens,
-            durationMs: Date.now() - startTime,
+            durationMs,
             timestamp: Date.now(),
             cacheHit: false
           };
 
-          // Record Success in Cache, Usage Tracker, Quota Commit, and Cooldown Manager
+          // Record Success in Cache, Usage Tracker, Quota Commit, Cooldown Manager, and Adaptive Routing Optimizer
           this.responseCache.set(cacheKey, 'AI', normalized, undefined, normalized.providerId);
           this.usageTracker.recordRequestSuccess(usageRecord, normalized.modelName);
           reservation.commit(usageRecord);
           this.cooldownManager.recordSuccess(provider.id, normalized.modelName);
+          this.aiRouter.optimizer.outcomeTracker.recordOutcome(provider.id, 'AI', true, durationMs);
 
           return normalized;
         } catch (err: unknown) {
           if (reservation) {
             reservation.release();
           }
+
+          const durationMs = Date.now() - startTime;
 
           if (err instanceof ProviderAdmissionError) {
             this.lifecycleManager.transitionTo(request.requestId, 'FAILED', { error: err.message });
@@ -202,11 +206,12 @@ export class ProviderExecutionEngine {
               requestId: request.requestId,
               operationType: request.operation,
               requestCount: attemptCount,
-              durationMs: Date.now() - startTime,
+              durationMs,
               timestamp: Date.now(),
               cacheHit: false
             });
             this.cooldownManager.recordFailure(provider.id, err);
+            this.aiRouter.optimizer.outcomeTracker.recordOutcome(provider.id, 'AI', false, durationMs);
           }
 
           const errMsg = err instanceof Error ? err.message : String(err);
@@ -310,9 +315,10 @@ export class ProviderExecutionEngine {
           this.lifecycleManager.transitionTo(request.requestId, 'EXECUTING', { providerId: provider.id });
           const response = await provider.search({ ...request, timeoutMs });
           const normalized = ProviderResponseNormalizer.normalizeSearchResponse(response);
+          const durationMs = Date.now() - startTime;
 
           this.lifecycleManager.transitionTo(request.requestId, 'COMPLETED');
-          this.metricsCollector.recordSuccess(Date.now() - startTime);
+          this.metricsCollector.recordSuccess(durationMs);
           this.cancellationManager.removeController(request.requestId);
           executionActive = false;
 
@@ -321,22 +327,25 @@ export class ProviderExecutionEngine {
             providerId: provider.id,
             requestId: request.requestId,
             requestCount: attemptCount,
-            durationMs: Date.now() - startTime,
+            durationMs,
             timestamp: Date.now(),
             cacheHit: false
           };
 
-          // Record Success in Cache, Usage Tracker, Quota Commit, and Cooldown Manager
+          // Record Success in Cache, Usage Tracker, Quota Commit, Cooldown Manager, and Adaptive Routing Optimizer
           this.responseCache.set(cacheKey, 'SEARCH', normalized, undefined, normalized.providerId);
           this.usageTracker.recordRequestSuccess(usageRecord);
           reservation.commit(usageRecord);
           this.cooldownManager.recordSuccess(provider.id);
+          this.searchRouter.optimizer.outcomeTracker.recordOutcome(provider.id, 'SEARCH', true, durationMs);
 
           return normalized;
         } catch (err: unknown) {
           if (reservation) {
             reservation.release();
           }
+
+          const durationMs = Date.now() - startTime;
 
           if (err instanceof ProviderAdmissionError) {
             this.lifecycleManager.transitionTo(request.requestId, 'FAILED', { error: err.message });
@@ -353,11 +362,12 @@ export class ProviderExecutionEngine {
               providerId: provider.id,
               requestId: request.requestId,
               requestCount: attemptCount,
-              durationMs: Date.now() - startTime,
+              durationMs,
               timestamp: Date.now(),
               cacheHit: false
             });
             this.cooldownManager.recordFailure(provider.id, err);
+            this.searchRouter.optimizer.outcomeTracker.recordOutcome(provider.id, 'SEARCH', false, durationMs);
           }
 
           const errMsg = err instanceof Error ? err.message : String(err);

@@ -260,12 +260,17 @@ export type EventTopic =
   | 'provider.quota_reservation_created'
   | 'provider.quota_reservation_released'
   | 'provider.quota_reservation_committed'
-  // Module 6F.7 Health & Reliability Topics
   | 'provider.health_updated'
   | 'provider.health_degraded'
   | 'provider.health_recovered'
   | 'provider.health_unhealthy'
-  | 'provider.routing_score_updated';
+  | 'provider.routing_score_updated'
+  // Module 6F.8 Adaptive Routing Topics
+  | 'provider.routing_optimized'
+  | 'provider.routing_policy_updated'
+  | 'provider.routing_exploration'
+  | 'provider.routing_outcome_recorded'
+  | 'provider.routing_stability_applied';
 
 export type EventPriority = 'LOW' | 'NORMAL' | 'HIGH' | 'CRITICAL';
 
