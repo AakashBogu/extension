@@ -252,7 +252,6 @@ export type EventTopic =
   | 'provider.cooldown_recovery_succeeded'
   | 'provider.cooldown_recovery_failed'
   | 'provider.cooldown_cleared'
-  // Module 6F.6 Quota Topics
   | 'provider.quota_updated'
   | 'provider.quota_warning'
   | 'provider.quota_critical'
@@ -260,7 +259,13 @@ export type EventTopic =
   | 'provider.quota_reset'
   | 'provider.quota_reservation_created'
   | 'provider.quota_reservation_released'
-  | 'provider.quota_reservation_committed';
+  | 'provider.quota_reservation_committed'
+  // Module 6F.7 Health & Reliability Topics
+  | 'provider.health_updated'
+  | 'provider.health_degraded'
+  | 'provider.health_recovered'
+  | 'provider.health_unhealthy'
+  | 'provider.routing_score_updated';
 
 export type EventPriority = 'LOW' | 'NORMAL' | 'HIGH' | 'CRITICAL';
 

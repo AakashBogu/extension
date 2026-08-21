@@ -1,13 +1,13 @@
 # System Changelog
 
-## [6.6.6-module6f6] - 2026-08-21
+## [6.6.7-module6f7] - 2026-08-22
 ### Added
-- `ProviderQuotaManager` top-level quota facade integrated into `ProviderExecutionEngine`, `ProviderAdmissionController`, and routers.
-- `ProviderQuotaEvaluator` calculating quota utilization ratios and window reset timestamps.
-- `ProviderQuotaSnapshotBuilder` constructing normalized `ProviderQuotaState` snapshots.
-- `ProviderQuotaReservationManager` managing thread-safe in-flight request reservations.
-- `ProviderQuotaRoutingPolicy` configuring candidate exclusion for routers.
-- `ProviderQuotaErrors` custom error hierarchy.
-- 8 new EventBus topics (`provider.quota_updated`, `provider.quota_warning`, `provider.quota_critical`, `provider.quota_exhausted`, `provider.quota_reset`, `provider.quota_reservation_created`, `provider.quota_reservation_released`, `provider.quota_reservation_committed`).
-- 8 new unit test files (`providerquotamanager.test.ts`, `providerquotaevaluator.test.ts`, `providerquotasnapshot.test.ts`, `providerquotarouting.test.ts`, `providerquotareservation.test.ts`, `providerquotaintegration.test.ts`, `providerquotaexhaustion.test.ts`, `providerquotarecovery.test.ts`).
-- Documentation suite in `docs/modules/provider-quota/`.
+- Enhanced `ProviderHealthManager` with health score (0.0 to 1.0) and routing score (0.0 to 1.0) computation.
+- `ProviderReliabilityTracker` tracking success/failure rates, retryable vs non-retryable failures, and consecutive counters.
+- `ProviderLatencyTracker` using bounded ring buffer (200 samples max per provider) for average, p50, and p95 latencies.
+- `ProviderHealthEvaluator` evaluating weighted health and deterministic candidate routing scores.
+- `ProviderHealthScoringPolicy` defining scoring weights and latency thresholds.
+- Integrated deterministic candidate ranking into `AIProviderRouter` and `SearchProviderRouter`.
+- 5 new EventBus topics (`provider.health_updated`, `provider.health_degraded`, `provider.health_recovered`, `provider.health_unhealthy`, `provider.routing_score_updated`).
+- 10 new unit test files (`providerhealthmanager.test.ts`, `providerhealthmetrics.test.ts`, `providerhealthscoring.test.ts`, `providerhealthreliability.test.ts`, `providerhealthlatency.test.ts`, `providerroutingscore.test.ts`, `providerhealthrouting.test.ts`, `providerhealthcooldown.test.ts`, `providerhealthquota.test.ts`, `providerhealthprivacy.test.ts`).
+- Documentation suite in `docs/modules/provider-health/`.

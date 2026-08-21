@@ -31,7 +31,7 @@ export class SearchProviderRouter {
     }
 
     // Filter by required capability flags
-    let capable = enabledProviders.filter(p =>
+    const capable = enabledProviders.filter(p =>
       requiredCapabilities.every(cap => p.capabilities.capabilities.includes(cap))
     );
 
@@ -40,45 +40,26 @@ export class SearchProviderRouter {
       throw new ProviderCapabilityError('No search provider supports required capabilities', { requestId: request.requestId, correlationId: request.correlationId });
     }
 
-    // Filter out providers in active cooldown
-    if (this.cooldownManager) {
-      const activeCapable = capable.filter(p => !this.cooldownManager!.isInCooldown(p.id));
-      if (activeCapable.length > 0) {
-        capable = activeCapable;
-      }
-    }
-
-    // Filter out quota exhausted providers
+    // Check if ALL candidate providers are quota exhausted
     if (this.quotaManager && this.quotaRoutingPolicy.excludeExhausted) {
-      const nonExhausted = capable.filter(p => !this.quotaManager!.isExhausted(p.id));
-      if (nonExhausted.length > 0) {
-        capable = nonExhausted;
-      } else {
+      const allExhausted = capable.every(p => this.quotaManager!.isExhausted(p.id));
+      if (allExhausted) {
         if (this.eventBus) this.eventBus.publish('provider.routing_failed', { query: request.query, reason: 'All candidate search providers are quota exhausted', timestamp: Date.now() });
         throw new ProviderQuotaRoutingError('All candidate search providers have exhausted their quota', { requestId: request.requestId, correlationId: request.correlationId });
       }
     }
 
-    // Deterministic ranking: HEALTHY > DEGRADED > UNHEALTHY, then Priority desc, then ID asc
-    const sorted = capable.sort((a, b) => {
-      const hA = this.healthManager.getHealth(a.id);
-      const hB = this.healthManager.getHealth(b.id);
+    // Rank candidates using HealthManager scoring
+    const ranked = this.healthManager.rankProviders(capable, this.cooldownManager, this.quotaManager);
+    const eligible = ranked.filter(r => r.score.isEligible);
 
-      const healthRank = (h: string) => (h === 'HEALTHY' ? 3 : h === 'DEGRADED' ? 2 : 1);
-      const diffHealth = healthRank(hB) - healthRank(hA);
-      if (diffHealth !== 0) return diffHealth;
-
-      const diffPriority = b.priority - a.priority;
-      if (diffPriority !== 0) return diffPriority;
-
-      return a.id.localeCompare(b.id);
-    });
-
-    const selected = sorted[0];
-    if (this.healthManager.getHealth(selected.id) === 'UNHEALTHY') {
-      if (this.eventBus) this.eventBus.publish('provider.routing_failed', { query: request.query, reason: 'All candidate search providers are UNHEALTHY', timestamp: Date.now() });
-      throw new ProviderRequestError('All candidate search providers are UNHEALTHY', { providerId: selected.id, requestId: request.requestId, correlationId: request.correlationId });
+    if (eligible.length === 0) {
+      const topChoice = ranked[0].provider;
+      if (this.eventBus) this.eventBus.publish('provider.routing_failed', { query: request.query, reason: 'All candidate search providers are UNHEALTHY or inoperable', timestamp: Date.now() });
+      throw new ProviderRequestError('All candidate search providers are UNHEALTHY or inoperable', { providerId: topChoice.id, requestId: request.requestId, correlationId: request.correlationId });
     }
+
+    const selected = eligible[0].provider;
 
     if (this.eventBus) {
       this.eventBus.publish('provider.routing_selected', { providerId: selected.id, requestId: request.requestId, timestamp: Date.now() });
@@ -88,29 +69,19 @@ export class SearchProviderRouter {
   }
 
   async executeWithFallback(request: SearchRequest, requiredCapabilities: SearchCapabilityFlag[] = []): Promise<SearchResponse> {
-    const enabledProviders = this.registry.getEnabled().filter(p =>
+    const capable = this.registry.getEnabled().filter(p =>
       requiredCapabilities.every(cap => p.capabilities.capabilities.includes(cap))
     );
 
-    const sorted = enabledProviders.sort((a, b) => {
-      const hA = this.healthManager.getHealth(a.id);
-      const hB = this.healthManager.getHealth(b.id);
-      const healthRank = (h: string) => (h === 'HEALTHY' ? 3 : h === 'DEGRADED' ? 2 : 1);
-      const diffHealth = healthRank(hB) - healthRank(hA);
-      if (diffHealth !== 0) return diffHealth;
-      const diffPriority = b.priority - a.priority;
-      if (diffPriority !== 0) return diffPriority;
-      return a.id.localeCompare(b.id);
-    });
+    const ranked = this.healthManager.rankProviders(capable, this.cooldownManager, this.quotaManager);
 
     let lastError: Error | null = null;
 
-    for (const provider of sorted) {
-      if (this.healthManager.getHealth(provider.id) === 'UNHEALTHY') continue;
-      if (this.cooldownManager && this.cooldownManager.isInCooldown(provider.id)) continue;
-      if (this.quotaManager && this.quotaRoutingPolicy.excludeExhausted && this.quotaManager.isExhausted(provider.id)) continue;
-
+    for (const entry of ranked) {
+      if (!entry.score.isEligible) continue;
+      const provider = entry.provider;
       const startTime = Date.now();
+
       try {
         const response = await provider.search(request);
         this.healthManager.recordSuccess(provider.id, Date.now() - startTime);

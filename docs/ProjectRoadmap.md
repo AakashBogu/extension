@@ -30,5 +30,6 @@
   - [x] **Module 6F.4: Provider Admission Controller** (ProviderAdmissionController, ProviderAdmissionEvaluator, ProviderAdmissionDecisionBuilder, ProviderAdmissionPolicy, ProviderAdmissionState)
   - [x] **Module 6F.5: Provider Cooldown & Recovery Manager** (ProviderCooldownManager, ProviderCooldownEvaluator, ProviderCooldownPolicy, ProviderCooldownState, ProviderCooldownRecoveryManager)
   - [x] **Module 6F.6: Provider Quota Manager & Routing Integration** (ProviderQuotaManager, ProviderQuotaEvaluator, ProviderQuotaSnapshotBuilder, ProviderQuotaReservationManager, ProviderQuotaRoutingPolicy, ProviderQuotaErrors)
+  - [x] **Module 6F.7: Provider Health, Reliability & Quota-Aware Routing Scoring** (ProviderHealthManager, ProviderReliabilityTracker, ProviderLatencyTracker, ProviderHealthEvaluator, ProviderHealthScoringPolicy, ProviderHealthSnapshotBuilder)
 - [ ] **Module 7: Verification Pipeline & Multi-Source Reranker**
 - [ ] **Module 8: Synchronized Overlay UI & DevTools**
