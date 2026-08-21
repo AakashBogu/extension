@@ -9,6 +9,7 @@ import { ProviderQuotaRoutingPolicy } from '../limits/ProviderQuotaRoutingPolicy
 import { ProviderQuotaRoutingError } from '../../error/ProviderQuotaErrors';
 import { ProviderRoutingOptimizer } from './ProviderRoutingOptimizer';
 import { ProviderAdaptiveRoutingPolicy } from './ProviderAdaptiveRoutingPolicy';
+import { ProviderReliabilityRecoveryManager } from '../recovery/ProviderReliabilityRecoveryManager';
 import { IEventBus } from '../../events/IEventBus';
 
 export class AIProviderRouter {
@@ -24,6 +25,7 @@ export class AIProviderRouter {
     quotaRoutingPolicy?: ProviderQuotaRoutingPolicy,
     optimizer?: ProviderRoutingOptimizer,
     adaptivePolicy?: ProviderAdaptiveRoutingPolicy,
+    private recoveryManager?: ProviderReliabilityRecoveryManager,
     private eventBus?: IEventBus
   ) {
     this.quotaRoutingPolicy = quotaRoutingPolicy || new ProviderQuotaRoutingPolicy();
@@ -38,8 +40,13 @@ export class AIProviderRouter {
       throw new ProviderCapabilityError('No enabled AI providers registered', { requestId: request.requestId, correlationId: request.correlationId });
     }
 
-    // Filter by capable operation
-    const capable = enabledProviders.filter(p => p.capabilities.operations.includes(request.operation));
+    // Filter by capable operation and Circuit OPEN check
+    const capable = enabledProviders.filter(p => {
+      if (!p.capabilities.operations.includes(request.operation)) return false;
+      if (this.recoveryManager && this.recoveryManager.getCircuitState(p.id) === 'OPEN') return false;
+      return true;
+    });
+
     if (capable.length === 0) {
       if (this.eventBus) this.eventBus.publish('provider.routing_failed', { operation: request.operation, reason: 'No capable AI provider for operation', timestamp: Date.now() });
       throw new ProviderCapabilityError(`No AI provider supports operation [${request.operation}]`, { requestId: request.requestId, correlationId: request.correlationId });
@@ -78,7 +85,10 @@ export class AIProviderRouter {
   }
 
   async executeWithFallback(request: AIRequest): Promise<AIResponse> {
-    const capable = this.registry.getEnabled().filter(p => p.capabilities.operations.includes(request.operation));
+    const capable = this.registry.getEnabled().filter(p =>
+      p.capabilities.operations.includes(request.operation) &&
+      (!this.recoveryManager || this.recoveryManager.getCircuitState(p.id) !== 'OPEN')
+    );
     const ranked = this.healthManager.rankProviders(capable, this.cooldownManager, this.quotaManager);
     const optimized = this.optimizer.optimizeCandidates(ranked, 'AI', this.adaptivePolicy);
 
@@ -94,12 +104,14 @@ export class AIProviderRouter {
         const latencyMs = Date.now() - startTime;
         this.healthManager.recordSuccess(provider.id, latencyMs);
         this.optimizer.outcomeTracker.recordOutcome(provider.id, 'AI', true, latencyMs);
+        if (this.recoveryManager) this.recoveryManager.recordSuccess(provider.id, latencyMs);
         return response;
       } catch (err) {
         lastError = err instanceof Error ? err : new Error(String(err));
         const latencyMs = Date.now() - startTime;
         this.healthManager.recordFailure(provider.id, lastError.message);
         this.optimizer.outcomeTracker.recordOutcome(provider.id, 'AI', false, latencyMs);
+        if (this.recoveryManager) this.recoveryManager.recordFailure(provider.id, lastError, latencyMs);
 
         if (this.eventBus) {
           this.eventBus.publish('provider.request_failed', { providerId: provider.id, requestId: request.requestId, error: lastError.message, timestamp: Date.now() });

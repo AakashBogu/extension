@@ -32,5 +32,6 @@
   - [x] **Module 6F.6: Provider Quota Manager & Routing Integration** (ProviderQuotaManager, ProviderQuotaEvaluator, ProviderQuotaSnapshotBuilder, ProviderQuotaReservationManager, ProviderQuotaRoutingPolicy, ProviderQuotaErrors)
   - [x] **Module 6F.7: Provider Health, Reliability & Quota-Aware Routing Scoring** (ProviderHealthManager, ProviderReliabilityTracker, ProviderLatencyTracker, ProviderHealthEvaluator, ProviderHealthScoringPolicy, ProviderHealthSnapshotBuilder)
   - [x] **Module 6F.8: Provider Routing Optimization & Adaptive Routing Policy** (ProviderRoutingOptimizer, ProviderAdaptiveRoutingPolicy, ProviderRoutingOutcomeTracker, ProviderRoutingWeights, ProviderRoutingDecision)
+  - [x] **Module 6F.9: Provider Reliability / Recovery & Circuit-Breaker Integration** (ProviderReliabilityRecoveryManager, ProviderCircuitEvaluator, ProviderCircuitPolicy, ProviderRecoveryProbeManager, ProviderCircuitState)
 - [ ] **Module 7: Verification Pipeline & Multi-Source Reranker**
 - [ ] **Module 8: Synchronized Overlay UI & DevTools**

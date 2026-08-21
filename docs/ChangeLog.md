@@ -1,13 +1,12 @@
 # System Changelog
 
-## [6.6.8-module6f8] - 2026-08-22
+## [6.6.9-module6f9] - 2026-08-22
 ### Added
-- `ProviderRoutingOptimizer` adaptive provider ranking facade with fail-safe fallback.
-- `ProviderAdaptiveRoutingPolicy` configuring EMA decay alpha (0.15), exploration bonus max (0.05), minimum score delta (0.03), and stickiness bonus (0.02).
-- `ProviderRoutingOutcomeTracker` bounded rolling memory tracker (200 records max) recording outcomes and updating EMA success rates.
-- `ProviderRoutingWeights` normalizing routing weightings.
-- `ProviderRoutingDecision` data contract.
-- Integrated adaptive routing optimization into `AIProviderRouter`, `SearchProviderRouter`, and `ProviderExecutionEngine`.
-- 5 new EventBus topics (`provider.routing_optimized`, `provider.routing_policy_updated`, `provider.routing_exploration`, `provider.routing_outcome_recorded`, `provider.routing_stability_applied`).
-- 12 new unit test files (`provideradaptivepolicy.test.ts`, `providerroutingoptimizer.test.ts`, `providerroutingdecision.test.ts`, `providerroutingweights.test.ts`, `providerroutingexploration.test.ts`, `providerroutingstickiness.test.ts`, `providerroutingoutcome.test.ts`, `providerroutingadaptive.test.ts`, `providerroutingstability.test.ts`, `providerroutingprivacy.test.ts`, `providerroutingfailsafe.test.ts`, `providerroutingintegration.test.ts`).
-- Documentation suite in `docs/modules/provider-routing-optimization/`.
+- `ProviderReliabilityRecoveryManager` circuit breaker facade managing `CLOSED`, `OPEN`, and `HALF_OPEN` states.
+- `ProviderCircuitEvaluator` evaluating failure thresholds (5 consecutive or 60% rolling rate) and exponential backoff recovery.
+- `ProviderCircuitPolicy` configuring circuit thresholds, recovery durations, and probe limits.
+- `ProviderRecoveryProbeManager` enforcing single concurrent recovery probe in `HALF_OPEN` state.
+- Integrated circuit breaker into `ProviderAdmissionController`, `ProviderAdmissionEvaluator`, `AIProviderRouter`, `SearchProviderRouter`, and `ProviderExecutionEngine`.
+- 6 new EventBus topics (`provider.circuit_opened`, `provider.circuit_half_open`, `provider.circuit_closed`, `provider.recovery_probe_started`, `provider.recovery_probe_succeeded`, `provider.recovery_probe_failed`).
+- 13 new unit test files (`providercircuitbreaker.test.ts`, `providercircuitpolicy.test.ts`, `providercircuittransition.test.ts`, `providercircuitrollingfailure.test.ts`, `providercircuitrecovery.test.ts`, `providercircuitprobe.test.ts`, `providercircuitadmission.test.ts`, `providercircuitrouting.test.ts`, `providercircuitcooldown.test.ts`, `providercircuithealth.test.ts`, `providercircuitoutcome.test.ts`, `providercircuitprivacy.test.ts`, `providercircuitintegration.test.ts`).
+- Documentation suite in `docs/modules/provider-reliability-recovery/`.

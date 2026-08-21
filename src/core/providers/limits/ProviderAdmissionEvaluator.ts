@@ -6,6 +6,7 @@ import { ProviderQuotaPolicy } from './ProviderQuotaPolicy';
 import { ProviderCooldownState } from './ProviderCooldownTypes';
 import { ExtendedRateLimitState } from './ProviderRateLimitStateTypes';
 import { ProviderQuotaManager } from './ProviderQuotaManager';
+import { ProviderReliabilityRecoveryManager } from '../recovery/ProviderReliabilityRecoveryManager';
 import { AIRequest } from '../ai/AIProviderTypes';
 import { SearchRequest } from '../search/SearchProviderTypes';
 
@@ -22,6 +23,8 @@ export class ProviderAdmissionEvaluator {
     maxConcurrentAllowed: number = 10,
     quotaManager?: ProviderQuotaManager,
     request?: AIRequest | SearchRequest,
+    recoveryManager?: ProviderReliabilityRecoveryManager,
+    isProbe: boolean = false,
     now: number = Date.now()
   ): AdmissionResult {
     // 1. DISABLED check
@@ -46,7 +49,22 @@ export class ProviderAdmissionEvaluator {
       };
     }
 
-    // 3. QUOTA_EXHAUSTED check
+    // 3. CIRCUIT_OPEN check
+    if (recoveryManager) {
+      const circuitEval = recoveryManager.evaluateAdmission(providerId, isProbe);
+      if (!circuitEval.allowed) {
+        return {
+          providerId,
+          decision: 'COOLDOWN',
+          reason: circuitEval.reason,
+          checkedAt: now,
+          retryAt: circuitEval.retryAt,
+          remainingCapacity: 0
+        };
+      }
+    }
+
+    // 4. QUOTA_EXHAUSTED check
     if (policy.enforceQuota) {
       if (quotaManager && request) {
         const quotaDecision = quotaManager.evaluate(providerId, request);
@@ -86,7 +104,7 @@ export class ProviderAdmissionEvaluator {
       }
     }
 
-    // 4. RATE_LIMITED check
+    // 5. RATE_LIMITED check
     if (policy.enforceRateLimit) {
       const snapshot = rateLimitTracker.refreshProvider(providerId);
       if (snapshot && snapshot.limits.length > 0) {
@@ -105,7 +123,7 @@ export class ProviderAdmissionEvaluator {
       }
     }
 
-    // 5. CAPACITY_EXCEEDED check
+    // 6. CAPACITY_EXCEEDED check
     if (policy.enforceCapacity && activeConcurrentCount >= maxConcurrentAllowed) {
       return {
         providerId,
@@ -116,7 +134,7 @@ export class ProviderAdmissionEvaluator {
       };
     }
 
-    // 6. ALLOWED
+    // 7. ALLOWED
     return {
       providerId,
       decision: 'ALLOWED',

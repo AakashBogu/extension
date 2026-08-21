@@ -1,75 +1,52 @@
 import { ProviderAdmissionPolicy } from './ProviderAdmissionPolicy';
-import { ProviderAdmissionState, ProviderAdmissionHealth } from './ProviderAdmissionState';
-import { ProviderAdmissionEvaluator } from './ProviderAdmissionEvaluator';
-import { AdmissionResult, AdmissionDecision } from './ProviderAdmissionTypes';
 import { ProviderRateLimitStateTracker } from './ProviderRateLimitStateTracker';
 import { ProviderUsageTracker } from './ProviderUsageTracker';
-import { ProviderQuotaPolicy } from './ProviderQuotaPolicy';
-import { ProviderCooldownState } from './ProviderCooldownTypes';
 import { ProviderCooldownManager } from './ProviderCooldownManager';
 import { ProviderQuotaManager } from './ProviderQuotaManager';
+import { ProviderQuotaPolicy } from './ProviderQuotaPolicy';
+import { ProviderCooldownState } from './ProviderCooldownTypes';
+import { ProviderReliabilityRecoveryManager } from '../recovery/ProviderReliabilityRecoveryManager';
+import { AdmissionResult } from './ProviderAdmissionTypes';
+import { ProviderAdmissionEvaluator } from './ProviderAdmissionEvaluator';
 import { AIRequest } from '../ai/AIProviderTypes';
 import { SearchRequest } from '../search/SearchProviderTypes';
 import { IEventBus } from '../../events/IEventBus';
-import { EventTopic } from '../../events/EventTypes';
 
 export class ProviderAdmissionController {
-  private policy = new ProviderAdmissionPolicy();
-  private state: ProviderAdmissionState = {
-    status: 'IDLE',
-    totalEvaluations: 0,
-    totalAllowed: 0,
-    totalDenied: 0,
-    totalRateLimited: 0,
-    totalQuotaExhausted: 0,
-    totalCooldown: 0,
-    totalCapacityExceeded: 0,
-    totalDisabled: 0,
-    lastEvaluatedAt: 0
-  };
-
-  private providerEnabledMap = new Map<string, boolean>();
-  private providerQuotaMap = new Map<string, ProviderQuotaPolicy>();
-  private providerCooldownMap = new Map<string, ProviderCooldownState>();
-  private decisionsMap = new Map<string, AdmissionResult>();
+  public readonly policy: ProviderAdmissionPolicy;
+  private disabledProviders = new Set<string>();
+  private manualCooldowns = new Map<string, ProviderCooldownState>();
+  private manualQuotaPolicies = new Map<string, ProviderQuotaPolicy>();
+  private totalEvaluations = 0;
+  private totalAllowed = 0;
+  private totalDenied = 0;
 
   constructor(
-    private rateLimitTracker: ProviderRateLimitStateTracker,
-    private usageTracker: ProviderUsageTracker,
+    public readonly rateLimitTracker: ProviderRateLimitStateTracker,
+    public readonly usageTracker: ProviderUsageTracker,
     policyConfig?: ProviderAdmissionPolicy,
-    private cooldownManager?: ProviderCooldownManager,
-    private quotaManager?: ProviderQuotaManager,
+    public readonly cooldownManager?: ProviderCooldownManager,
+    public readonly quotaManager?: ProviderQuotaManager,
+    public readonly recoveryManager?: ProviderReliabilityRecoveryManager,
     private eventBus?: IEventBus
   ) {
-    if (policyConfig) this.policy = policyConfig;
+    this.policy = policyConfig || new ProviderAdmissionPolicy();
   }
 
-  async initialize(): Promise<void> {
-    this.state.status = 'READY';
-  }
+  async initialize(): Promise<void> {}
 
-  setProviderEnabled(providerId: string, enabled: boolean): void {
-    this.providerEnabledMap.set(providerId, enabled);
-  }
-
-  setProviderQuotaPolicy(providerId: string, policy: ProviderQuotaPolicy): void {
-    this.providerQuotaMap.set(providerId, policy);
-    if (this.quotaManager) {
-      this.quotaManager.configureQuotaPolicy(providerId, policy);
-    }
-  }
-
-  setProviderCooldown(providerId: string, cooldown: ProviderCooldownState): void {
-    this.providerCooldownMap.set(providerId, cooldown);
-  }
-
-  evaluate(request: AIRequest | SearchRequest, providerId: string, activeConcurrentCount: number = 0, maxConcurrentAllowed: number = 10): AdmissionResult {
-    this.state.totalEvaluations++;
-    this.state.lastEvaluatedAt = Date.now();
-
-    const enabledState = this.providerEnabledMap.get(providerId) ?? true;
-    const quotaPolicy = this.providerQuotaMap.get(providerId);
-    const cooldownState = (this.cooldownManager ? this.cooldownManager.getCooldown(providerId) : null) || this.providerCooldownMap.get(providerId) || undefined;
+  evaluate(
+    request: AIRequest | SearchRequest,
+    providerId: string,
+    activeConcurrentCount: number = 0,
+    maxConcurrentAllowed: number = 10,
+    isProbe: boolean = false
+  ): AdmissionResult {
+    this.totalEvaluations++;
+    const managerCooldown = this.cooldownManager ? (this.cooldownManager.getCooldown(providerId) || undefined) : undefined;
+    const cooldownState = this.manualCooldowns.get(providerId) || managerCooldown;
+    const quotaPolicy = this.manualQuotaPolicies.get(providerId);
+    const isEnabled = !this.disabledProviders.has(providerId);
 
     const result = ProviderAdmissionEvaluator.evaluate(
       providerId,
@@ -78,104 +55,94 @@ export class ProviderAdmissionController {
       this.usageTracker,
       quotaPolicy,
       cooldownState,
-      enabledState,
+      isEnabled,
       activeConcurrentCount,
       maxConcurrentAllowed,
       this.quotaManager,
       request,
-      Date.now()
+      this.recoveryManager,
+      isProbe
     );
 
-    if (request.requestId) {
-      this.decisionsMap.set(request.requestId, result);
+    if (result.decision === 'ALLOWED') {
+      this.totalAllowed++;
+      if (this.eventBus) this.eventBus.publish('provider.admission_allowed', result);
+    } else {
+      this.totalDenied++;
+      if (this.eventBus) this.eventBus.publish('provider.admission_denied', result);
     }
-
-    this.updateCounters(result.decision);
-    this.publishAdmissionEvent(result);
 
     return result;
   }
 
-  canExecute(request: AIRequest | SearchRequest, providerId: string, activeConcurrentCount: number = 0, maxConcurrentAllowed: number = 10): boolean {
-    const result = this.evaluate(request, providerId, activeConcurrentCount, maxConcurrentAllowed);
-    return result.decision === 'ALLOWED';
+  canExecute(request: AIRequest | SearchRequest, providerId: string): boolean {
+    return this.evaluate(request, providerId).decision === 'ALLOWED';
   }
 
-  getDecision(requestId: string): AdmissionResult | null {
-    return this.decisionsMap.get(requestId) || null;
-  }
-
-  getStatus(): ProviderAdmissionState {
-    return { ...this.state };
-  }
-
-  async healthCheck(): Promise<ProviderAdmissionHealth> {
-    const total = this.state.totalEvaluations;
-    const denialRate = total > 0 ? parseFloat((this.state.totalDenied / total).toFixed(4)) : 0;
-    const status = denialRate >= 0.5 ? 'UNHEALTHY' : denialRate > 0.1 ? 'DEGRADED' : 'HEALTHY';
-
+  getStatus() {
     return {
-      status,
-      denialRate,
-      lastCheckedAt: Date.now()
+      totalEvaluations: this.totalEvaluations,
+      totalAllowed: this.totalAllowed,
+      totalDenied: this.totalDenied
     };
   }
 
+  setProviderEnabled(providerId: string, enabled: boolean): void {
+    if (enabled) {
+      this.disabledProviders.delete(providerId);
+    } else {
+      this.disabledProviders.add(providerId);
+    }
+  }
+
+  setProviderCooldown(providerId: string, durationOrConfig: number | { providerId: string; inCooldown: boolean; reason?: string; expiresAt?: number }, reason: string = 'Manual cooldown'): void {
+    if (typeof durationOrConfig === 'number') {
+      const state: ProviderCooldownState = {
+        providerId,
+        inCooldown: true,
+        reason,
+        expiresAt: Date.now() + durationOrConfig
+      };
+      this.manualCooldowns.set(providerId, state);
+      if (this.cooldownManager) {
+        this.cooldownManager.startCooldown(providerId, 'LOCAL_POLICY', reason, durationOrConfig);
+      }
+    } else if (durationOrConfig && typeof durationOrConfig === 'object') {
+      if (!durationOrConfig.inCooldown) {
+        this.manualCooldowns.delete(providerId);
+        if (this.cooldownManager) {
+          this.cooldownManager.clearCooldown(providerId);
+        }
+      } else {
+        const expiresAt = durationOrConfig.expiresAt || (Date.now() + 30000);
+        const state: ProviderCooldownState = {
+          providerId,
+          inCooldown: true,
+          reason: durationOrConfig.reason || reason,
+          expiresAt
+        };
+        this.manualCooldowns.set(providerId, state);
+        if (this.cooldownManager) {
+          this.cooldownManager.startCooldown(providerId, 'LOCAL_POLICY', durationOrConfig.reason || reason, expiresAt - Date.now());
+        }
+      }
+    }
+  }
+
+  setProviderQuotaPolicy(providerId: string, policy: ProviderQuotaPolicy): void {
+    this.manualQuotaPolicies.set(providerId, policy);
+  }
+
   reset(): void {
-    this.decisionsMap.clear();
-    this.providerCooldownMap.clear();
-    this.state.totalEvaluations = 0;
-    this.state.totalAllowed = 0;
-    this.state.totalDenied = 0;
-    this.state.totalRateLimited = 0;
-    this.state.totalQuotaExhausted = 0;
-    this.state.totalCooldown = 0;
-    this.state.totalCapacityExceeded = 0;
-    this.state.totalDisabled = 0;
+    this.disabledProviders.clear();
+    this.manualCooldowns.clear();
+    this.manualQuotaPolicies.clear();
+    this.totalEvaluations = 0;
+    this.totalAllowed = 0;
+    this.totalDenied = 0;
   }
 
   destroy(): void {
     this.reset();
-    this.providerEnabledMap.clear();
-    this.providerQuotaMap.clear();
-    this.state.status = 'DESTROYED';
-  }
-
-  private updateCounters(decision: AdmissionDecision): void {
-    if (decision === 'ALLOWED') {
-      this.state.totalAllowed++;
-    } else {
-      this.state.totalDenied++;
-      if (decision === 'RATE_LIMITED') this.state.totalRateLimited++;
-      if (decision === 'QUOTA_EXHAUSTED') this.state.totalQuotaExhausted++;
-      if (decision === 'COOLDOWN') this.state.totalCooldown++;
-      if (decision === 'CAPACITY_EXCEEDED') this.state.totalCapacityExceeded++;
-      if (decision === 'DISABLED') this.state.totalDisabled++;
-    }
-  }
-
-  private publishAdmissionEvent(result: AdmissionResult): void {
-    if (!this.eventBus) return;
-
-    if (result.decision === 'ALLOWED') {
-      this.eventBus.publish('provider.admission_allowed', { providerId: result.providerId, timestamp: Date.now() });
-    } else {
-      const topicMap: Record<string, EventTopic> = {
-        RATE_LIMITED: 'provider.admission_rate_limited',
-        QUOTA_EXHAUSTED: 'provider.admission_quota_exhausted',
-        COOLDOWN: 'provider.admission_cooldown',
-        CAPACITY_EXCEEDED: 'provider.admission_capacity_exceeded',
-        DISABLED: 'provider.admission_disabled'
-      };
-
-      const topic = topicMap[result.decision] || 'provider.admission_denied';
-      this.eventBus.publish(topic, {
-        providerId: result.providerId,
-        decision: result.decision,
-        reason: result.reason,
-        retryAt: result.retryAt,
-        timestamp: Date.now()
-      });
-    }
   }
 }

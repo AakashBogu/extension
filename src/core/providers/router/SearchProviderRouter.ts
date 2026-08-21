@@ -9,6 +9,7 @@ import { ProviderQuotaRoutingPolicy } from '../limits/ProviderQuotaRoutingPolicy
 import { ProviderQuotaRoutingError } from '../../error/ProviderQuotaErrors';
 import { ProviderRoutingOptimizer } from './ProviderRoutingOptimizer';
 import { ProviderAdaptiveRoutingPolicy } from './ProviderAdaptiveRoutingPolicy';
+import { ProviderReliabilityRecoveryManager } from '../recovery/ProviderReliabilityRecoveryManager';
 import { IEventBus } from '../../events/IEventBus';
 
 export class SearchProviderRouter {
@@ -24,6 +25,7 @@ export class SearchProviderRouter {
     quotaRoutingPolicy?: ProviderQuotaRoutingPolicy,
     optimizer?: ProviderRoutingOptimizer,
     adaptivePolicy?: ProviderAdaptiveRoutingPolicy,
+    private recoveryManager?: ProviderReliabilityRecoveryManager,
     private eventBus?: IEventBus
   ) {
     this.quotaRoutingPolicy = quotaRoutingPolicy || new ProviderQuotaRoutingPolicy();
@@ -38,10 +40,12 @@ export class SearchProviderRouter {
       throw new ProviderCapabilityError('No enabled search providers registered', { requestId: request.requestId, correlationId: request.correlationId });
     }
 
-    // Filter by required capability flags
-    const capable = enabledProviders.filter(p =>
-      requiredCapabilities.every(cap => p.capabilities.capabilities.includes(cap))
-    );
+    // Filter by required capability flags and Circuit OPEN check
+    const capable = enabledProviders.filter(p => {
+      if (!requiredCapabilities.every(cap => p.capabilities.capabilities.includes(cap))) return false;
+      if (this.recoveryManager && this.recoveryManager.getCircuitState(p.id) === 'OPEN') return false;
+      return true;
+    });
 
     if (capable.length === 0) {
       if (this.eventBus) this.eventBus.publish('provider.routing_failed', { query: request.query, reason: 'No capable search provider for required capabilities', timestamp: Date.now() });
@@ -82,7 +86,8 @@ export class SearchProviderRouter {
 
   async executeWithFallback(request: SearchRequest, requiredCapabilities: SearchCapabilityFlag[] = []): Promise<SearchResponse> {
     const capable = this.registry.getEnabled().filter(p =>
-      requiredCapabilities.every(cap => p.capabilities.capabilities.includes(cap))
+      requiredCapabilities.every(cap => p.capabilities.capabilities.includes(cap)) &&
+      (!this.recoveryManager || this.recoveryManager.getCircuitState(p.id) !== 'OPEN')
     );
 
     const ranked = this.healthManager.rankProviders(capable, this.cooldownManager, this.quotaManager);
@@ -100,12 +105,14 @@ export class SearchProviderRouter {
         const latencyMs = Date.now() - startTime;
         this.healthManager.recordSuccess(provider.id, latencyMs);
         this.optimizer.outcomeTracker.recordOutcome(provider.id, 'SEARCH', true, latencyMs);
+        if (this.recoveryManager) this.recoveryManager.recordSuccess(provider.id, latencyMs);
         return response;
       } catch (err) {
         lastError = err instanceof Error ? err : new Error(String(err));
         const latencyMs = Date.now() - startTime;
         this.healthManager.recordFailure(provider.id, lastError.message);
         this.optimizer.outcomeTracker.recordOutcome(provider.id, 'SEARCH', false, latencyMs);
+        if (this.recoveryManager) this.recoveryManager.recordFailure(provider.id, lastError, latencyMs);
 
         if (this.eventBus) {
           this.eventBus.publish('provider.request_failed', { providerId: provider.id, requestId: request.requestId, error: lastError.message, timestamp: Date.now() });

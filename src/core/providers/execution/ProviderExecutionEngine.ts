@@ -23,6 +23,7 @@ import { ProviderRateLimitStateTracker } from '../limits/ProviderRateLimitStateT
 import { ProviderAdmissionController } from '../limits/ProviderAdmissionController';
 import { ProviderCooldownManager } from '../limits/ProviderCooldownManager';
 import { ProviderQuotaManager } from '../limits/ProviderQuotaManager';
+import { ProviderReliabilityRecoveryManager } from '../recovery/ProviderReliabilityRecoveryManager';
 import { ProviderAdmissionError } from '../../error/ProviderLimitErrors';
 import { IEventBus } from '../../events/IEventBus';
 
@@ -42,6 +43,7 @@ export class ProviderExecutionEngine {
   public readonly rateLimitTracker: ProviderRateLimitStateTracker;
   public readonly cooldownManager: ProviderCooldownManager;
   public readonly quotaManager: ProviderQuotaManager;
+  public readonly circuitRecoveryManager: ProviderReliabilityRecoveryManager;
   public readonly admissionController: ProviderAdmissionController;
 
   constructor(
@@ -57,6 +59,7 @@ export class ProviderExecutionEngine {
     admissionController?: ProviderAdmissionController,
     cooldownManager?: ProviderCooldownManager,
     quotaManager?: ProviderQuotaManager,
+    circuitRecoveryManager?: ProviderReliabilityRecoveryManager,
     private eventBus?: IEventBus
   ) {
     this.policy = policyConfig instanceof ProviderExecutionPolicy ? policyConfig : new ProviderExecutionPolicy(policyConfig);
@@ -72,13 +75,15 @@ export class ProviderExecutionEngine {
     this.rateLimitTracker = rateLimitTracker || new ProviderRateLimitStateTracker(this.usageTracker, eventBus);
     this.cooldownManager = cooldownManager || new ProviderCooldownManager(undefined, eventBus);
     this.quotaManager = quotaManager || new ProviderQuotaManager(this.usageTracker, eventBus);
-    this.admissionController = admissionController || new ProviderAdmissionController(this.rateLimitTracker, this.usageTracker, undefined, this.cooldownManager, this.quotaManager, eventBus);
+    this.circuitRecoveryManager = circuitRecoveryManager || new ProviderReliabilityRecoveryManager(eventBus);
+    this.admissionController = admissionController || new ProviderAdmissionController(this.rateLimitTracker, this.usageTracker, undefined, this.cooldownManager, this.quotaManager, this.circuitRecoveryManager, eventBus);
   }
 
   async initialize(): Promise<void> {
     this.status = 'INITIALIZING';
     await this.cooldownManager.initialize();
     await this.quotaManager.initialize();
+    await this.circuitRecoveryManager.initialize();
     await this.admissionController.initialize();
     if (this.eventBus) {
       this.eventBus.publish('provider.execution_initialized', { timestamp: Date.now() });
@@ -175,12 +180,13 @@ export class ProviderExecutionEngine {
             cacheHit: false
           };
 
-          // Record Success in Cache, Usage Tracker, Quota Commit, Cooldown Manager, and Adaptive Routing Optimizer
+          // Record Success in Cache, Usage Tracker, Quota Commit, Cooldown Manager, Adaptive Optimizer, Circuit Breaker Recovery
           this.responseCache.set(cacheKey, 'AI', normalized, undefined, normalized.providerId);
           this.usageTracker.recordRequestSuccess(usageRecord, normalized.modelName);
           reservation.commit(usageRecord);
           this.cooldownManager.recordSuccess(provider.id, normalized.modelName);
           this.aiRouter.optimizer.outcomeTracker.recordOutcome(provider.id, 'AI', true, durationMs);
+          this.circuitRecoveryManager.recordSuccess(provider.id, durationMs);
 
           return normalized;
         } catch (err: unknown) {
@@ -212,6 +218,7 @@ export class ProviderExecutionEngine {
             });
             this.cooldownManager.recordFailure(provider.id, err);
             this.aiRouter.optimizer.outcomeTracker.recordOutcome(provider.id, 'AI', false, durationMs);
+            this.circuitRecoveryManager.recordFailure(provider.id, err, durationMs);
           }
 
           const errMsg = err instanceof Error ? err.message : String(err);
@@ -332,12 +339,13 @@ export class ProviderExecutionEngine {
             cacheHit: false
           };
 
-          // Record Success in Cache, Usage Tracker, Quota Commit, Cooldown Manager, and Adaptive Routing Optimizer
+          // Record Success in Cache, Usage Tracker, Quota Commit, Cooldown Manager, Adaptive Optimizer, Circuit Breaker Recovery
           this.responseCache.set(cacheKey, 'SEARCH', normalized, undefined, normalized.providerId);
           this.usageTracker.recordRequestSuccess(usageRecord);
           reservation.commit(usageRecord);
           this.cooldownManager.recordSuccess(provider.id);
           this.searchRouter.optimizer.outcomeTracker.recordOutcome(provider.id, 'SEARCH', true, durationMs);
+          this.circuitRecoveryManager.recordSuccess(provider.id, durationMs);
 
           return normalized;
         } catch (err: unknown) {
@@ -368,6 +376,7 @@ export class ProviderExecutionEngine {
             });
             this.cooldownManager.recordFailure(provider.id, err);
             this.searchRouter.optimizer.outcomeTracker.recordOutcome(provider.id, 'SEARCH', false, durationMs);
+            this.circuitRecoveryManager.recordFailure(provider.id, err, durationMs);
           }
 
           const errMsg = err instanceof Error ? err.message : String(err);
@@ -447,6 +456,7 @@ export class ProviderExecutionEngine {
     this.admissionController.reset();
     this.cooldownManager.reset();
     this.quotaManager.reset();
+    this.circuitRecoveryManager.reset();
     this.status = 'STOPPED';
   }
 
@@ -460,6 +470,7 @@ export class ProviderExecutionEngine {
     this.admissionController.destroy();
     this.cooldownManager.destroy();
     this.quotaManager.destroy();
+    this.circuitRecoveryManager.destroy();
     this.status = 'DESTROYED';
   }
 
