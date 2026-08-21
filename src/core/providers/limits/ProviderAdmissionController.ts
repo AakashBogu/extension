@@ -6,6 +6,7 @@ import { ProviderRateLimitStateTracker } from './ProviderRateLimitStateTracker';
 import { ProviderUsageTracker } from './ProviderUsageTracker';
 import { ProviderQuotaPolicy } from './ProviderQuotaPolicy';
 import { ProviderCooldownState } from './ProviderCooldownTypes';
+import { ProviderCooldownManager } from './ProviderCooldownManager';
 import { AIRequest } from '../ai/AIProviderTypes';
 import { SearchRequest } from '../search/SearchProviderTypes';
 import { IEventBus } from '../../events/IEventBus';
@@ -35,6 +36,7 @@ export class ProviderAdmissionController {
     private rateLimitTracker: ProviderRateLimitStateTracker,
     private usageTracker: ProviderUsageTracker,
     policyConfig?: ProviderAdmissionPolicy,
+    private cooldownManager?: ProviderCooldownManager,
     private eventBus?: IEventBus
   ) {
     if (policyConfig) this.policy = policyConfig;
@@ -62,7 +64,7 @@ export class ProviderAdmissionController {
 
     const enabledState = this.providerEnabledMap.get(providerId) ?? true;
     const quotaPolicy = this.providerQuotaMap.get(providerId);
-    const cooldownState = this.providerCooldownMap.get(providerId);
+    const cooldownState = (this.cooldownManager ? this.cooldownManager.getCooldown(providerId) : null) || this.providerCooldownMap.get(providerId) || undefined;
 
     const result = ProviderAdmissionEvaluator.evaluate(
       providerId,

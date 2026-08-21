@@ -21,6 +21,7 @@ import { ProviderCacheKeyGenerator } from '../cache/ProviderCacheKeyGenerator';
 import { ProviderUsageTracker } from '../limits/ProviderUsageTracker';
 import { ProviderRateLimitStateTracker } from '../limits/ProviderRateLimitStateTracker';
 import { ProviderAdmissionController } from '../limits/ProviderAdmissionController';
+import { ProviderCooldownManager } from '../limits/ProviderCooldownManager';
 import { ProviderAdmissionError } from '../../error/ProviderLimitErrors';
 import { IEventBus } from '../../events/IEventBus';
 
@@ -38,6 +39,7 @@ export class ProviderExecutionEngine {
   public readonly deduplicator: ProviderInFlightDeduplicator;
   public readonly usageTracker: ProviderUsageTracker;
   public readonly rateLimitTracker: ProviderRateLimitStateTracker;
+  public readonly cooldownManager: ProviderCooldownManager;
   public readonly admissionController: ProviderAdmissionController;
 
   constructor(
@@ -51,6 +53,7 @@ export class ProviderExecutionEngine {
     usageTracker?: ProviderUsageTracker,
     rateLimitTracker?: ProviderRateLimitStateTracker,
     admissionController?: ProviderAdmissionController,
+    cooldownManager?: ProviderCooldownManager,
     private eventBus?: IEventBus
   ) {
     this.policy = policyConfig instanceof ProviderExecutionPolicy ? policyConfig : new ProviderExecutionPolicy(policyConfig);
@@ -64,11 +67,13 @@ export class ProviderExecutionEngine {
     this.deduplicator = new ProviderInFlightDeduplicator(this.responseCache.metricsCollector, eventBus);
     this.usageTracker = usageTracker || new ProviderUsageTracker(eventBus);
     this.rateLimitTracker = rateLimitTracker || new ProviderRateLimitStateTracker(this.usageTracker, eventBus);
-    this.admissionController = admissionController || new ProviderAdmissionController(this.rateLimitTracker, this.usageTracker, undefined, eventBus);
+    this.cooldownManager = cooldownManager || new ProviderCooldownManager(undefined, eventBus);
+    this.admissionController = admissionController || new ProviderAdmissionController(this.rateLimitTracker, this.usageTracker, undefined, this.cooldownManager, eventBus);
   }
 
   async initialize(): Promise<void> {
     this.status = 'INITIALIZING';
+    await this.cooldownManager.initialize();
     await this.admissionController.initialize();
     if (this.eventBus) {
       this.eventBus.publish('provider.execution_initialized', { timestamp: Date.now() });
@@ -146,7 +151,7 @@ export class ProviderExecutionEngine {
           this.cancellationManager.removeController(request.requestId);
           executionActive = false;
 
-          // Insert into Cache & Usage Tracker
+          // Record Success in Cache, Usage Tracker, and Cooldown Manager
           this.responseCache.set(cacheKey, 'AI', normalized, undefined, normalized.providerId);
           this.usageTracker.recordRequestSuccess({
             recordId: `rec_${Date.now()}_${request.requestId}`,
@@ -161,6 +166,8 @@ export class ProviderExecutionEngine {
             timestamp: Date.now(),
             cacheHit: false
           }, normalized.modelName);
+
+          this.cooldownManager.recordSuccess(provider.id, normalized.modelName);
 
           return normalized;
         } catch (err: unknown) {
@@ -184,6 +191,7 @@ export class ProviderExecutionEngine {
               timestamp: Date.now(),
               cacheHit: false
             });
+            this.cooldownManager.recordFailure(provider.id, err);
           }
 
           const errMsg = err instanceof Error ? err.message : String(err);
@@ -289,7 +297,7 @@ export class ProviderExecutionEngine {
           this.cancellationManager.removeController(request.requestId);
           executionActive = false;
 
-          // Insert into Cache & Usage Tracker
+          // Record Success in Cache, Usage Tracker, and Cooldown Manager
           this.responseCache.set(cacheKey, 'SEARCH', normalized, undefined, normalized.providerId);
           this.usageTracker.recordRequestSuccess({
             recordId: `rec_${Date.now()}_${request.requestId}`,
@@ -300,6 +308,8 @@ export class ProviderExecutionEngine {
             timestamp: Date.now(),
             cacheHit: false
           });
+
+          this.cooldownManager.recordSuccess(provider.id);
 
           return normalized;
         } catch (err: unknown) {
@@ -322,6 +332,7 @@ export class ProviderExecutionEngine {
               timestamp: Date.now(),
               cacheHit: false
             });
+            this.cooldownManager.recordFailure(provider.id, err);
           }
 
           const errMsg = err instanceof Error ? err.message : String(err);
@@ -399,6 +410,7 @@ export class ProviderExecutionEngine {
     this.deduplicator.clear();
     this.usageTracker.resetAll();
     this.admissionController.reset();
+    this.cooldownManager.reset();
     this.status = 'STOPPED';
   }
 
@@ -410,6 +422,7 @@ export class ProviderExecutionEngine {
     this.deduplicator.clear();
     this.usageTracker.resetAll();
     this.admissionController.destroy();
+    this.cooldownManager.destroy();
     this.status = 'DESTROYED';
   }
 

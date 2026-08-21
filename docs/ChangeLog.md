@@ -1,12 +1,12 @@
 # System Changelog
 
-## [6.6.4-module6f4] - 2026-08-20
+## [6.6.5-module6f5] - 2026-08-20
 ### Added
-- `ProviderAdmissionController` top-level admission facade integrated into `ProviderExecutionEngine`.
-- `ProviderAdmissionEvaluator` evaluating deterministic admission order (`DISABLED` -> `COOLDOWN` -> `QUOTA_EXHAUSTED` -> `RATE_LIMITED` -> `CAPACITY_EXCEEDED` -> `ALLOWED`).
-- `ProviderAdmissionDecisionBuilder` constructing structured `AdmissionResult` records.
-- `ProviderAdmissionPolicy` configuring admission enforcement flags.
-- `ProviderAdmissionState` tracking admission counters and health status.
-- 7 new EventBus topics (`provider.admission_allowed`, `provider.admission_denied`, `provider.admission_rate_limited`, `provider.admission_quota_exhausted`, `provider.admission_cooldown`, `provider.admission_capacity_exceeded`, `provider.admission_disabled`).
-- 7 new unit test files (`provideradmission.test.ts`, `provideradmissionrate.test.ts`, `provideradmissionquota.test.ts`, `provideradmissioncooldown.test.ts`, `provideradmissioncapacity.test.ts`, `provideradmissiondisabled.test.ts`, `provideradmissionintegration.test.ts`).
-- Documentation suite in `docs/modules/provider-admission/`.
+- `ProviderCooldownManager` top-level cooldown facade integrated into `ProviderExecutionEngine`, `ProviderAdmissionController`, and routers.
+- `ProviderCooldownEvaluator` calculating exponential backoff and Retry-After normalization.
+- `ProviderCooldownPolicy` configuring base/max durations, backoff factor, and failure trigger flags.
+- `ProviderCooldownRecoveryManager` handling cooldown timers and recovery scheduling.
+- `ExtendedProviderCooldownState` data contract.
+- 7 new EventBus topics (`provider.cooldown_started`, `provider.cooldown_extended`, `provider.cooldown_expired`, `provider.cooldown_recovery_started`, `provider.cooldown_recovery_succeeded`, `provider.cooldown_recovery_failed`, `provider.cooldown_cleared`).
+- 8 new unit test files (`providercooldownmanager.test.ts`, `providercooldownevaluator.test.ts`, `providercooldownpolicy.test.ts`, `providercooldownrecovery.test.ts`, `providercooldownbackoff.test.ts`, `providercooldownretryafter.test.ts`, `providercooldownadmission.test.ts`, `providercooldownexecution.test.ts`).
+- Documentation suite in `docs/modules/provider-cooldown/`.

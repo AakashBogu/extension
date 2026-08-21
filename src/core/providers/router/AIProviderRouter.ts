@@ -3,12 +3,14 @@ import { ProviderHealthManager } from '../health/ProviderHealthManager';
 import { IAIProvider } from '../ai/IAIProvider';
 import { AIRequest, AIResponse } from '../ai/AIProviderTypes';
 import { ProviderCapabilityError, ProviderRequestError } from '../../error/ProviderErrors';
+import { ProviderCooldownManager } from '../limits/ProviderCooldownManager';
 import { IEventBus } from '../../events/IEventBus';
 
 export class AIProviderRouter {
   constructor(
     private registry: AIProviderRegistry,
     private healthManager: ProviderHealthManager,
+    private cooldownManager?: ProviderCooldownManager,
     private eventBus?: IEventBus
   ) {}
 
@@ -20,10 +22,18 @@ export class AIProviderRouter {
     }
 
     // Filter by capable operation
-    const capable = enabledProviders.filter(p => p.capabilities.operations.includes(request.operation));
+    let capable = enabledProviders.filter(p => p.capabilities.operations.includes(request.operation));
     if (capable.length === 0) {
       if (this.eventBus) this.eventBus.publish('provider.routing_failed', { operation: request.operation, reason: 'No capable AI provider for operation', timestamp: Date.now() });
       throw new ProviderCapabilityError(`No AI provider supports operation [${request.operation}]`, { requestId: request.requestId, correlationId: request.correlationId });
+    }
+
+    // Filter out providers in active cooldown if cooldownManager is provided
+    if (this.cooldownManager) {
+      const activeCapable = capable.filter(p => !this.cooldownManager!.isInCooldown(p.id));
+      if (activeCapable.length > 0) {
+        capable = activeCapable;
+      }
     }
 
     // Deterministic ranking: HEALTHY > DEGRADED > UNHEALTHY, then Priority desc, then ID asc
@@ -71,6 +81,7 @@ export class AIProviderRouter {
 
     for (const provider of sorted) {
       if (this.healthManager.getHealth(provider.id) === 'UNHEALTHY') continue;
+      if (this.cooldownManager && this.cooldownManager.isInCooldown(provider.id)) continue;
 
       const startTime = Date.now();
       try {

@@ -28,5 +28,6 @@
   - [x] **Module 6F.2: Provider Usage Tracker** (ProviderUsageTracker, ProviderUsageSnapshotBuilder, ProviderUsageBucketManager, ProviderUsageMetricsCollector)
   - [x] **Module 6F.3: Provider Rate-Limit State Tracker** (ProviderRateLimitStateTracker, ProviderRateLimitStateTypes, ProviderRateLimitEvaluator, ProviderRateLimitWindowManager, ProviderRateLimitSnapshotBuilder)
   - [x] **Module 6F.4: Provider Admission Controller** (ProviderAdmissionController, ProviderAdmissionEvaluator, ProviderAdmissionDecisionBuilder, ProviderAdmissionPolicy, ProviderAdmissionState)
+  - [x] **Module 6F.5: Provider Cooldown & Recovery Manager** (ProviderCooldownManager, ProviderCooldownEvaluator, ProviderCooldownPolicy, ProviderCooldownState, ProviderCooldownRecoveryManager)
 - [ ] **Module 7: Verification Pipeline & Multi-Source Reranker**
 - [ ] **Module 8: Synchronized Overlay UI & DevTools**

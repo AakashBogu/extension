@@ -3,12 +3,14 @@ import { ProviderHealthManager } from '../health/ProviderHealthManager';
 import { ISearchProvider } from '../search/ISearchProvider';
 import { SearchRequest, SearchResponse, SearchCapabilityFlag } from '../search/SearchProviderTypes';
 import { ProviderCapabilityError, ProviderRequestError } from '../../error/ProviderErrors';
+import { ProviderCooldownManager } from '../limits/ProviderCooldownManager';
 import { IEventBus } from '../../events/IEventBus';
 
 export class SearchProviderRouter {
   constructor(
     private registry: SearchProviderRegistry,
     private healthManager: ProviderHealthManager,
+    private cooldownManager?: ProviderCooldownManager,
     private eventBus?: IEventBus
   ) {}
 
@@ -20,13 +22,21 @@ export class SearchProviderRouter {
     }
 
     // Filter by required capability flags
-    const capable = enabledProviders.filter(p =>
+    let capable = enabledProviders.filter(p =>
       requiredCapabilities.every(cap => p.capabilities.capabilities.includes(cap))
     );
 
     if (capable.length === 0) {
       if (this.eventBus) this.eventBus.publish('provider.routing_failed', { query: request.query, reason: 'No capable search provider for required capabilities', timestamp: Date.now() });
       throw new ProviderCapabilityError('No search provider supports required capabilities', { requestId: request.requestId, correlationId: request.correlationId });
+    }
+
+    // Filter out providers in active cooldown if cooldownManager is provided
+    if (this.cooldownManager) {
+      const activeCapable = capable.filter(p => !this.cooldownManager!.isInCooldown(p.id));
+      if (activeCapable.length > 0) {
+        capable = activeCapable;
+      }
     }
 
     // Deterministic ranking: HEALTHY > DEGRADED > UNHEALTHY, then Priority desc, then ID asc
@@ -77,6 +87,7 @@ export class SearchProviderRouter {
 
     for (const provider of sorted) {
       if (this.healthManager.getHealth(provider.id) === 'UNHEALTHY') continue;
+      if (this.cooldownManager && this.cooldownManager.isInCooldown(provider.id)) continue;
 
       const startTime = Date.now();
       try {

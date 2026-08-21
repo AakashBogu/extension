@@ -20,7 +20,7 @@
 - **Date Completed**: 2026-08-19
 - **Deliverables**: Complete real-time claim detection facade, sentence segmenter, claim candidate detectors, classifiers, normalizers, confidence/priority engines, deduplication manager, and `VerifiableClaim` boundary object.
 
-## Module 6 AI & Search Provider Abstraction Layer Suite (6A-6F.4)
+## Module 6 AI & Search Provider Abstraction Layer Suite (6A-6F.5)
 - **Date Completed**: 2026-08-20
 - **Deliverables**:
   - Module 6A: `ISearchProvider`, `IAIProvider`, `SearchRequest`, `SearchResponse`, `AIRequest`, `AIResponse`, `ProviderTypes`, `ProviderErrors`.
@@ -31,4 +31,5 @@
   - Module 6F.1: Rate-limit and quota contracts, policies, error hierarchy.
   - Module 6F.2: `ProviderUsageTracker`, usage snapshot builder, time bucket manager, usage metrics collector.
   - Module 6F.3: `ProviderRateLimitStateTracker`, rate-limit evaluator, window manager.
-  - Module 6F.4: `ProviderAdmissionController`, `ProviderAdmissionEvaluator`, `ProviderAdmissionDecisionBuilder`, `ProviderAdmissionPolicy`, `ProviderAdmissionState`, 7 event topics, 7 new test files (Total 194 passing unit tests across 131 test suites).
+  - Module 6F.4: `ProviderAdmissionController`, `ProviderAdmissionEvaluator`, `ProviderAdmissionDecisionBuilder`, `ProviderAdmissionPolicy`, `ProviderAdmissionState`.
+  - Module 6F.5: `ProviderCooldownManager`, `ProviderCooldownEvaluator`, `ProviderCooldownPolicy`, `ProviderCooldownState`, `ProviderCooldownRecoveryManager`, 7 event topics, 8 new test files (Total 202 passing unit tests across 139 test suites).
