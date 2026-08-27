@@ -36,7 +36,7 @@ cmd /c npm run test
 
 # 5. Build extension distribution bundle (dist/)
 cmd /c npm run build
-```
+``` 
 
 ### Loading in Google Chrome
 1. Open Chrome and navigate to `chrome://extensions`.
