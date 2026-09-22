@@ -276,7 +276,15 @@ export type EventTopic =
   | 'provider.circuit_closed'
   | 'provider.recovery_probe_started'
   | 'provider.recovery_probe_succeeded'
-  | 'provider.recovery_probe_failed';
+  | 'provider.recovery_probe_failed'
+  // Module 6F.10 Provider Observability Topics
+  | 'provider.telemetry_collected'
+  | 'provider.telemetry_aggregated'
+  | 'provider.telemetry_snapshot_generated'
+  | 'provider.diagnostic_report_generated'
+  | 'provider.diagnostic_finding_detected'
+  | 'provider.observability_initialized'
+  | 'provider.observability_error';
 
 export type EventPriority = 'LOW' | 'NORMAL' | 'HIGH' | 'CRITICAL';
 

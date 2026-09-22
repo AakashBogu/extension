@@ -41,3 +41,26 @@ export class HealthCheckError extends AppError {
     this.name = 'HealthCheckError';
   }
 }
+
+// Module 6F.10 Provider Observability Errors
+
+export class TelemetryCollectionError extends AppError {
+  constructor(message: string, details?: Record<string, unknown>) {
+    super(`Telemetry collection error: ${message}`, 'ERR_TELEMETRY_COLLECTION', details);
+    this.name = 'TelemetryCollectionError';
+  }
+}
+
+export class TelemetryAggregationError extends AppError {
+  constructor(message: string, details?: Record<string, unknown>) {
+    super(`Telemetry aggregation error: ${message}`, 'ERR_TELEMETRY_AGGREGATION', details);
+    this.name = 'TelemetryAggregationError';
+  }
+}
+
+export class ProviderDiagnosticReportError extends AppError {
+  constructor(message: string, details?: Record<string, unknown>) {
+    super(`Diagnostic report error: ${message}`, 'ERR_PROVIDER_DIAGNOSTIC_REPORT', details);
+    this.name = 'ProviderDiagnosticReportError';
+  }
+}
