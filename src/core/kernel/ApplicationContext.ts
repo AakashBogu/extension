@@ -4,11 +4,14 @@ import { IConfigLoader } from '../config/IConfig';
 import { ILogger } from '../logger/ILogger';
 import { StateManager } from '../state/StateManager';
 import { PluginManager } from '../plugin/PluginManager';
-import { AIProviderRegistry } from '../../providers/registry/AIProviderRegistry';
-import { SearchProviderRegistry } from '../../providers/registry/SearchProviderRegistry';
+import { AIProviderRegistry } from '../providers/registry/AIProviderRegistry';
+import { SearchProviderRegistry } from '../providers/registry/SearchProviderRegistry';
 import { SpeechProviderRegistry } from '../../providers/registry/SpeechProviderRegistry';
 import { OCRProviderRegistry } from '../../providers/registry/OCRProviderRegistry';
 import { StorageProviderRegistry } from '../../providers/registry/StorageProviderRegistry';
+import { ProviderExecutionEngine } from '../providers/execution/ProviderExecutionEngine';
+import { VerificationEngine } from '../verification/VerificationEngine';
+import { ProviderObservabilityManager } from '../providers/observability/ProviderObservabilityManager';
 
 export interface RuntimeMetadata {
   readonly instanceId: string;
@@ -32,6 +35,9 @@ export class ApplicationContext {
       ocr: OCRProviderRegistry;
       storage: StorageProviderRegistry;
     },
-    public readonly runtimeMetadata: RuntimeMetadata
+    public readonly runtimeMetadata: RuntimeMetadata,
+    public readonly executionEngine?: ProviderExecutionEngine,
+    public readonly verificationEngine?: VerificationEngine,
+    public readonly observabilityManager?: ProviderObservabilityManager
   ) {}
 }

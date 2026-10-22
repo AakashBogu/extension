@@ -8,12 +8,19 @@ import { StatePersistenceManager } from '../state/StatePersistenceManager';
 import { PluginManager } from '../plugin/PluginManager';
 import { ApplicationContext, RuntimeMetadata } from './ApplicationContext';
 import { GlobalState } from '../state/StateTypes';
-import { AIProviderRegistry } from '../../providers/registry/AIProviderRegistry';
-import { SearchProviderRegistry } from '../../providers/registry/SearchProviderRegistry';
+import { AIProviderRegistry } from '../providers/registry/AIProviderRegistry';
+import { SearchProviderRegistry } from '../providers/registry/SearchProviderRegistry';
 import { SpeechProviderRegistry } from '../../providers/registry/SpeechProviderRegistry';
 import { OCRProviderRegistry } from '../../providers/registry/OCRProviderRegistry';
 import { StorageProviderRegistry } from '../../providers/registry/StorageProviderRegistry';
 import { ExtensionInitializationError } from '../error/AppError';
+import { MetricsManager } from '../metrics/MetricsManager';
+import { ProviderHealthManager } from '../providers/health/ProviderHealthManager';
+import { AIProviderRouter } from '../providers/router/AIProviderRouter';
+import { SearchProviderRouter } from '../providers/router/SearchProviderRouter';
+import { ProviderExecutionEngine } from '../providers/execution/ProviderExecutionEngine';
+import { ProviderObservabilityManager } from '../providers/observability/ProviderObservabilityManager';
+import { VerificationEngine } from '../verification/VerificationEngine';
 
 export class SimpleLogger {
   debug(msg: string, ctx?: Record<string, unknown>) { console.debug('[DEBUG]', msg, ctx || ''); }
@@ -79,6 +86,75 @@ export class ApplicationKernel {
         storage: new StorageProviderRegistry()
       };
 
+      // Metrics & Observability Architecture
+      const metricsManager = new MetricsManager(eventBus);
+      const providerHealthManager = new ProviderHealthManager(eventBus);
+
+      // Provider Routers
+      const aiRouter = new AIProviderRouter(
+        providerRegistries.ai,
+        providerHealthManager,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        eventBus
+      );
+      const searchRouter = new SearchProviderRouter(
+        providerRegistries.search,
+        providerHealthManager,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        eventBus
+      );
+
+      // Provider Execution Engine
+      const executionEngine = new ProviderExecutionEngine(
+        aiRouter,
+        searchRouter,
+        providerRegistries.ai,
+        providerRegistries.search,
+        providerHealthManager,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        eventBus
+      );
+      await executionEngine.initialize();
+
+      // Provider Observability Manager
+      const observabilityManager = new ProviderObservabilityManager(
+        undefined,
+        providerHealthManager,
+        executionEngine.circuitRecoveryManager,
+        executionEngine.cooldownManager,
+        executionEngine.quotaManager,
+        executionEngine.rateLimitTracker,
+        eventBus
+      );
+      await observabilityManager.initialize();
+
+      // Module 7: Verification Engine
+      const verificationEngine = new VerificationEngine(
+        executionEngine,
+        undefined,
+        eventBus,
+        metricsManager
+      );
+      await verificationEngine.initialize();
+      verificationEngine.start();
+
       // DI Bindings
       container.bind('IServiceContainer').toValue(container);
       container.bind('IEventBus').toValue(eventBus);
@@ -89,6 +165,13 @@ export class ApplicationKernel {
       container.bind('StateRegistry').toValue(stateRegistry);
       container.bind('StatePersistenceManager').toValue(persistenceManager);
       container.bind('PluginManager').toValue(pluginManager);
+      container.bind('MetricsManager').toValue(metricsManager);
+      container.bind('ProviderHealthManager').toValue(providerHealthManager);
+      container.bind('AIProviderRouter').toValue(aiRouter);
+      container.bind('SearchProviderRouter').toValue(searchRouter);
+      container.bind('ProviderExecutionEngine').toValue(executionEngine);
+      container.bind('ProviderObservabilityManager').toValue(observabilityManager);
+      container.bind('VerificationEngine').toValue(verificationEngine);
 
       const runtimeMetadata: RuntimeMetadata = {
         instanceId: `inst_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
@@ -105,7 +188,10 @@ export class ApplicationKernel {
         stateManager,
         pluginManager,
         providerRegistries,
-        runtimeMetadata
+        runtimeMetadata,
+        executionEngine,
+        verificationEngine,
+        observabilityManager
       );
 
       container.bind('ApplicationContext').toValue(this.context);
@@ -126,6 +212,24 @@ export class ApplicationKernel {
     if (!this.isBooted || !this.context) return;
 
     try {
+      // 1. Teardown VerificationEngine (Module 7)
+      if (this.context.verificationEngine) {
+        await this.context.verificationEngine.stop();
+        this.context.verificationEngine.destroy();
+      }
+
+      // 2. Teardown Observability
+      if (this.context.observabilityManager) {
+        this.context.observabilityManager.shutdown();
+        this.context.observabilityManager.destroy();
+      }
+
+      // 3. Teardown ProviderExecutionEngine
+      if (this.context.executionEngine) {
+        await this.context.executionEngine.shutdown();
+        this.context.executionEngine.destroy();
+      }
+
       await this.context.eventBus.publish('system.app_stopped', { timestamp: Date.now() });
 
       // Persist state
