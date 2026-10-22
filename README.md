@@ -56,4 +56,4 @@ cmd /c npm run build
 
 ### Documentation & Specifications
 Complete system architectural documentation and module design specifications are located inside [/docs](docs/README.md).
-Module 1A technical documentation is inside [/docs/modules/project-foundation](docs/modules/project-foundation/README.md).
+Module 1A technical documentation is inside [/docs/modules/project-foundation](docs/modules/project-foundation/README.md). .
