@@ -1,4 +1,4 @@
-# Real-Time Video Fact-Checking Chrome Extension (MV3)
+ # Real-Time Video Fact-Checking Chrome Extension (MV3)
 
 A high-performance, enterprise-grade Chrome Extension for real-time video audio capture, speech transcription, factual claim detection, multi-source AI verification, and synchronized video overlay rendering.
 
