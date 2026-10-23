@@ -51,7 +51,7 @@ cmd /c npm run build
 - **Offscreen Document**: `src/offscreen/index.html` & `src/offscreen/index.ts`
 - **Popup UI**: `src/popup/index.html` & `src/popup/PopupApp.tsx`
 - **Options UI**: `src/options/index.html` & `src/options/OptionsApp.tsx`
-- **DevTools Panel**: `src/devtools/index.html` & `src/devtools/DevToolsApp.tsx`
+- **DevTools Panel**: `src/devtools/index.html` & `src/devtools/DevToolsApp.tsx` 
 - **Overlay Shell UI**: `src/ui/overlay/OverlayShell.tsx` (Mounted inside Shadow DOM)
 
 ### Documentation & Specifications
